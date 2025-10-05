@@ -1,386 +1,143 @@
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
-<Kopf>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=Gerätebreite, initiale-scale=1.0">
- <title>Intervall Timer</title>
- <script src="https://cdn.tailwindcss.com"></Skript>
- <Stil>
- körper {
- box-sizing: border-box;
- }
- 
-.pulse-animation {
- Animation: Puls 0,5s Ease-In-Out;
- }
- 
-@keyframes Puls {
- 0% { transformieren: scale(1); }
- 50% { transformieren: scale(1.1); }
- 100% { transformieren: scale(1); }
- }
- 
-.signal-flash {
- Animation: Blitz 0,5 s Ease-In-Out;
- }
- 
-@keyframes blinken {
- 0% { Hintergrundfarbe: rgb(16, 185, 129); }
- 50% { Hintergrundfarbe: rgb(5, 150, 105); }
- 100% { Hintergrundfarbe: rgb(16, 185, 129); }
- }
- </Stil>
-</Kopf>
-<body class="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 flex items-center justify-center p-4">
- <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full text-center">
- <h1 class="text-3xl font-bold text-white mb-8">Intervall Timer</h1>
- 
-<!-- Zeiteinstellungen -->
- <div class="bg-weiß/5 gerundet-2xl p-4 mb-6" id="timeSettings">
- <div class="text-lg text-white mb-3">Timer-Dauer einstellen</div>
- <div class="flex gap-2 justify-center mb-3 flex-wrap">
- <button class="time-preset bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg text-sm transition-all" data-minutes="1">1 Min</Taste>
- <button class="time-preset bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg text-sm transition-all" data-minutes="3">3 Min</Taste>
- <button class="time-preset bg-yellow-700 hover:bg-yellow-800 text-white px-3 py-2 rounded-lg text-sm transition-all border-2 border-yellow-300" data-minutes="6">6 Min</Taste>
- <button class="time-preset bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg text-sm transition-all" data-minutes="10">10 Min</Taste>
- <button class="time-preset bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg text-sm transition-all" data-minutes="15">15 Min</Taste>
- </div>
- <div class="flexible Elemente-Mitte Lücke-3 ausrichten-Mitte">
- <label class="text-white text-sm">Eigene Zeit:</label>
- <input type="number" id="customMinutes" min="1" max="60" value="6" 
- class="bg-black/30 text-white px-3 py-2 rounded-lg w-16 text-center border-gray-600 focus:border-yellow-400 focus:outline-none">
- <span class="text-white text-sm">Min</span>
- <button id="setCustomTime" class="bg-smaragd-700 hover:bg-smaragd-800 text-weiß px-3 py-2 rounded-lg text-sm übergang-alle">
- Setzen
- </Taste>
- </div>
- </div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Intervall Timer - Testdatei</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#064e3b;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center}
+    .card{background:#0b3b2d;border:1px solid #1f6b53;border-radius:20px;padding:20px;max-width:420px;width:92%}
+    h1{margin:0 0 16px;font-size:28px;text-align:center}
+    .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+    button{cursor:pointer;border:0;border-radius:12px;padding:10px 14px;background:#059669;color:#fff;font-weight:600}
+    button:disabled{opacity:.5;cursor:default}
+    .ghost{background:#6b7280}
+    .warn{background:#ca8a04}
+    .box{background:#052e24;border-radius:14px;padding:14px;margin:10px 0;text-align:center}
+    .big{font:700 54px/1 monospace}
+    .bar{height:8px;background:#1f2937;border-radius:999px;overflow:hidden;margin:14px 0}
+    .bar>div{height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#10b981)}
+    .lbl{font-size:13px;color:#c7d2fe;opacity:.9}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Intervall Timer</h1>
 
-<!-- Timer-Anzeige -->
- <div class="bg-schwarz/30 gerundet-2XL P-6 MB-8">
- <div class="text-6xl font-mono font-bold text-white mb-2" id="timeDisplay">06:00</div>
- <div class="text-lg text-gray-300" id="statusText">Bereit zum Start</div>
- </div>
- 
-<!-- Signalzähler -->
- <div class="bg-smaragd-600/20 gerundet-xl p-4 MB-6">
- <div class="text-sm text-emerald-300 mb-1">Signale gegeben</div>
- <div class="text-3xl schrift-fett text-smaragd-400" id="signalAnzahl">0</div>
- </div>
- 
-<!-- Fortschrittsbalken -->
- <div class="bg-gray-700 gerundet-voll h-3 mb-6 überlauf-versteckt">
- <div class="bg-gradient-to-r von-gelb-400 nach-emeralD-500 h-vollständig gerundet-vollständiger Übergang-alle Dauer-1000" 
- id="progressBar" style="width: 0%"></div>
- </div>
- 
-<!-- Steuertasten -->
- <div class="flex gap-4 justify-center">
- <button id="startBtn" 
- class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105">
- ▶ Anfangen
- </Taste>
- <button id="pauseBtn" 
- class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 opacity-50" 
- Behinderte>
- ⏸ Pause
- </Taste>
- <button id="resetBtn" 
- class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105">
- ⏹ Zurücksetzen
- </Taste>
- </div>
- 
-<!-- nächsten Signal-Countdown -->
- <div class="mt-6 text-grau-300">
- <div class="text-sm">Nächstes Signal in:</div>
- <div class="text-xl font-bold" id="nextSignal">20s</div>
- </div>
- </div>
+    <div class="box">
+      <div class="lbl">Timer-Dauer einstellen</div>
+      <div class="row">
+        <button class="preset" data-min="1">1 Min</button>
+        <button class="preset" data-min="3">3 Min</button>
+        <button class="preset" data-min="6">6 Min</button>
+        <button class="preset" data-min="10">10 Min</button>
+        <button class="preset" data-min="15">15 Min</button>
+      </div>
+      <div class="row">
+        <span class="lbl">Eigene Zeit:</span>
+        <input id="customMin" type="number" min="1" max="60" value="6" style="width:64px;text-align:center;border-radius:10px;border:1px solid #334155;padding:8px;background:#021b15;color:#fff">
+        <span class="lbl">Min</span>
+        <button id="setBtn" class="warn">Setzen</button>
+      </div>
+    </div>
 
-<Drehbuch>
- class IntervalTimer {
- konstruktor() {
- this.totalTime = 6 * 60; 6 Minuten in Sekunden
- this.signalInterval = 20; 20 Sekunden
- this.timeLeft = this.totalTime;
- this.timeUntilNextSignal = this.signalInterval;
- this.signalCount = 0;
- this.isRunning = falsch;
- this.timer = null;
- 
-this.initElements();
- this.bindEvents();
- this.updateDisplay();
- }
- 
-initElements() {
- this.timeDisplay = document.getElementById('timeDisplay');
- this.statusText = document.getElementById('statusText');
- this.signalCountDisplay = document.getElementById('signalCount');
- this.progressBar = document.getElementById('progressBar');
- this.nextSignalDisplay = document.getElementById('nextSignal');
- this.startBtn = document.getElementById('startBtn');
- this.pauseBtn = document.getElementById('pauseBtn');
- this.resetBtn = document.getElementById('resetBtn');
- this.timeSettings = document.getElementById('timeSettings');
- this.customMinutesInput = document.getElementById('customMinutes');
- this.setCustomTimeBtn = document.getElementById('setCustomTime');
- this.timePresetBtns = document.querySelectorAll('.time-preset');
- }
- 
-bindEvents() {
- this.startBtn.addEventListener('klick', () => this.start());
- this.pauseBtn.addEventListener('klick', () => this.pause());
- this.resetBtn.addEventListener('klick', () => this.reset());
- 
-Tasten für Zeitvoreinstellungen
- this.timePresetBtns.forEach(btn => {
- btn.addEventListener('klick', () => {
- const Minuten = parseInt(btn.dataset.minutes);
- this.setTimerDuration(Minuten);
- this.updatePresetSelection(btn);
- });
- });
- 
-Benutzerdefinierte Zeiteinstellung
- this.setCustomTimeBtn.addEventListener('klick', () => {
- const Minuten = parseInt(this.customMinutesInput.value);
- if (Minuten >= 1 && Minuten <= 60) {
- this.setTimerDuration(Minuten);
- this.updatePresetSelection(null);
- }
- });
- 
-Geben Sie die Taste für die benutzerdefinierte Zeiteingabe ein
- this.customMinutesInput.addEventListener('Tastendruck', (e) => {
- if (e.key === 'Enter') {
- this.setCustomTimeBtn.click();
- }
- });
- }
- 
-setTimerDuration(Minuten) {
- if (!this.isRunning) {
- this.totalTime = Minuten * 60;
- this.timeLeft = this.totalTime;
- this.timeUntilNextSignal = this.signalInterval;
- this.signalCount = 0;
- this.updateDisplay();
- this.statusText.textContent = 'Bereit zum Start';
- }
- }
- 
-updatePresetSelection(selectedBtn) {
- Alle Preset-Tasten zurücksetzen
- this.timePresetBtns.forEach(btn => {
- btn.classList.remove('bg-gelb-700', 'border-2', 'border-yellow-300');
- btn.classList.add('bg-gelb-600');
- });
- 
-Ausgewählte Schaltfläche hervorheben
- if (selectedBtn) {
- selectedBtn.classList.remove('bg-yellow-600');
- selectedBtn.classList.add('bg-yellow-700', 'border-2', 'border-yellow-300');
- }
- }
- 
-hideTimeSettings() {
- this.timeSettings.style.display = 'keine';
- }
- 
-showTimeSettings() {
- this.timeSettings.style.display = 'Block';
- }
- 
-start() {
- if (!this.isRunning) {
- this.isRunning = wahr;
- this.statusText.textContent = 'Timer läuft...';
- this.startBtn.disabled = wahr;
- this.startBtn.classList.add('opacity-50');
- this.pauseBtn.disabled = falsch;
- this.pauseBtn.classList.remove('opacity-50');
- this.hideTimeSettings();
- 
-this.timer = setInterval(() => {
- this.tick();
- }, 1000);
- }
- }
- 
-pause() {
- if (this.isRunning) {
- this.isRunning = falsch;
- clearInterval(dieser.timer);
- this.statusText.textContent = 'Pausiert';
- this.startBtn.disabled = falsch;
- this.startBtn.classList.remove('opacity-50');
- this.pauseBtn.disabled = wahr;
- this.pauseBtn.classList.add('opacity-50');
- }
- }
- 
-reset() {
- this.isRunning = falsch;
- clearInterval(dieser.timer);
- this.timeLeft = 0;
- this.timeUntilNextSignal = 0;
- this.signalCount = 0;
- this.statusText.textContent = 'Zurückgesetzt';
- 
-this.startBtn.disabled = falsch;
- this.startBtn.classList.remove('opacity-50');
- this.pauseBtn.disabled = wahr;
- this.pauseBtn.classList.add('opacity-50');
- this.showTimeSettings();
- 
-this.updateDisplay();
- }
- 
-tick() {
- this.timeLeft--;
- this.timeUntilNextSignal--;
- 
-Auf Signal prüfen
- if (this.timeUntilNextSignal <= 0) {
- this.triggerSignal();
- this.timeUntilNextSignal = this.signalInterval;
- }
- 
-Überprüfen Sie, ob der Timer abgelaufen ist
- if (this.timeLeft <= 0) {
- this.finish();
- Rückgabe;
- }
- 
-this.updateDisplay();
- }
- 
-triggerSignal() {
- this.signalCount++;
- 
-Optisches Signal - blinken Sie im Hintergrund
- document.body.classList.add('signal-flash');
- setTimeout(() => {
- document.body.classList.remove('signal-flash');
- }, 500);
- 
-Impulsanimation für Signalzähler
- this.signalCountDisplay.classList.add('pulse-animation');
- setTimeout(() => {
- this.signalCountDisplay.classList.remove('pulse-animation');
- }, 500);
- 
-Audiosignal (Piepton über die Web Audio API)
- this.playBeep();
- }
- 
-playBeep() {
- try {
- const audioContext = new (Fenster. AudioKontext || window.webkitAudioContext)();
- const oszillator = audioContext.createOszillator();
- const gainNode = audioContext.createGain();
- 
-oszillator.connect(gainNode);
- gainNode.connect(audioContext.destination);
- 
-oszillator.frequenzwert = 800; 800 Hz Ton
- oszillator.type = 'Sinus';
- 
-gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
- gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
- 
-oszillator.start(audioContext.currentTime);
- oszillator.stop(audioContext.currentTime + 0.3);
- } catch (Fehler) {
- console.log('Audio nicht verfügbar');
- }
- }
- 
-playCompletionJingle() {
- try {
- const audioContext = new (Fenster. AudioKontext || window.webkitAudioContext)();
- 
-Sieges-Jingle-Melodie: C-E-G-C (höhere Oktave)
- const notes = [
- { freq: 523.25, start: 0, duration: 0.3 }, // C5
- { freq: 659.25, start: 0.3, duration: 0.3 }, // E5
- { freq: 783.99, start: 0.6, duration: 0.3 }, // G5
- { freq: 1046.50, Start: 0.9, Dauer: 0.6 } // C6 (längere Schlussnotiz)
- ];
- 
-notes.forEach(Hinweis = > {
- const oszillator = audioContext.createOszillator();
- const gainNode = audioContext.createGain();
- 
-oszillator.connect(gainNode);
- GAInNode.connect(audioContext.destination);
- 
-oszillator.frequenz.wert = note.freq;
- oszillator.type = 'Sinus';
- 
-Hüllkurve für jede Note
- gainNode.gain.setValueAtTime(0, audioContext.currentTime + note.start);
- gainNode.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + note.start + 0.05);
- gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + note.start + note.duration);
- 
-oszillator.start(audioContext.currentTime + note.start);
- oszillator.stop(audioContext.currentTime + note.start + note.duration);
- });
- } catch (Fehler) {
- console.log('Audio nicht verfügbar');
- }
- }
- 
-finish() {
- this.isRunning = falsch;
- clearInterval(dieser.timer);
- this.statusText.textContent = 'Timer beendet!';
- this.timeLeft = 0;
- this.timeUntilNextSignal = 0;
- 
-this.startBtn.disabled = wahr;
- this.startBtn.classList.add('opacity-50');
- this.pauseBtn.disabled = wahr;
- this.pauseBtn.classList.add('opacity-50');
- 
-this.updateDisplay();
- 
-Abspielen des Abschluss-Jingles
- this.playCompletionJingle();
- 
-Letzter Jubelblitz
- setTimeout(() => {
- document.body.classList.add('signal-flash');
- setTimeout(() => {
- document.body.classList.remove('signal-flash');
- }, 1000);
- }, 100);
- }
- 
-updateDisplay() {
- Aktualisieren der Haupt-Timer-Anzeige
- const Minuten = Math.floor(this.timeLeft / 60);
- const Sekunden = this.timeLeft % 60;
- this.timeDisplay.textContent = '${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}';
- 
-Aktualisieren der Signalanzahl
- this.signalCountDisplay.textContent = this.signalCount;
- 
-Fortschrittsbalken aktualisieren
- const progress = ((this.totalTime - this.timeLeft) / this.totalTime) * 100;
- this.progressBar.style.width = '${Fortschritt}%';
- 
-Countdown für das nächste Signal aktualisieren
- this.nextSignalDisplay.textContent = '${this.timeUntilNextSignal}s';
- }
- }
- 
-Initialisieren des Timers beim Laden der Seite
- document.addEventListener('DOMContentLoaded', () => {
- neues IntervalTimer();
- });
- </Drehbuch>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.Dokument; if(b){var d=b.createElement('Skript'); d.innerHTML="window.__CF$cv$params={r:'989fbbc28560c26a',t:'MTc1OTY5NjgxOS4wMDAwMDA='}; var a=document.createElement('Skript'); a.nonce=''; a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js'; document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe'); a.Höhe=1; a.breite=1; a.style.position='absolut'; a.style.top=0; a.style.left=0; a.style.border='keine'; a.style.visibility='versteckt'; document.body.appendKind(a); if('loading'!==document.readyState)c(); else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c); else{var e=document.onreadystatechange||Funktion(){}; document.onreadystatechange=function(b){e(b);' loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})(); </Drehbuch></Text>
-</html> 
+    <div class="box">
+      <div id="time" class="big">06:00</div>
+      <div id="status">Bereit zum Start</div>
+    </div>
+
+    <div class="box">
+      <div class="lbl">Signale gegeben</div>
+      <div id="count" style="font-size:28px;font-weight:700;color:#34d399">0</div>
+    </div>
+
+    <div class="bar"><div id="prog"></div></div>
+
+    <div class="row">
+      <button id="start">Start</button>
+      <button id="pause" class="warn" disabled>Pause</button>
+      <button id="reset" class="ghost">Reset</button>
+    </div>
+
+    <div style="text-align:center;margin-top:10px">
+      <div class="lbl">Nächstes Signal in:</div>
+      <div id="next" style="font-size:20px;font-weight:700">20s</div>
+    </div>
+  </div>
+
+  <script>
+    class IntervalTimer {
+      constructor(){
+        this.total=6*60; this.signal=20;
+        this.left=this.total; this.toSignal=this.signal;
+        this.count=0; this.run=false; this.t=null;
+        this.$=id=>document.getElementById(id);
+        this.time=this.$('time'); this.status=this.$('status');
+        this.countEl=this.$('count'); this.prog=this.$('prog'); this.next=this.$('next');
+        this.startBtn=this.$('start'); this.pauseBtn=this.$('pause'); this.resetBtn=this.$('reset');
+        this.custom=document.getElementById('customMin'); this.setBtn=this.$('setBtn');
+        document.querySelectorAll('.preset').forEach(b=>b.onclick=()=>this.setDuration(+b.dataset.min));
+        this.setBtn.onclick=()=>this.setDuration(+this.custom.value);
+        this.startBtn.onclick=()=>this.start(); this.pauseBtn.onclick=()=>this.pause(); this.resetBtn.onclick=()=>this.reset();
+        this.draw();
+      }
+      setDuration(min){ if(this.run) return;
+        this.total=min*60; this.left=this.total; this.toSignal=this.signal; this.count=0;
+        this.status.textContent='Bereit zum Start'; this.draw();
+      }
+      start(){ if(this.run) return; this.run=true;
+        this.status.textContent='Timer läuft...'; this.startBtn.disabled=true; this.pauseBtn.disabled=false;
+        this.t=setInterval(()=>this.tick(),1000);
+      }
+      pause(){ if(!this.run) return; this.run=false; clearInterval(this.t);
+        this.status.textContent='Pausiert'; this.startBtn.disabled=false; this.pauseBtn.disabled=true;
+      }
+      reset(){ this.run=false; clearInterval(this.t); this.left=this.total; this.toSignal=this.signal; this.count=0;
+        this.status.textContent='Zurückgesetzt'; this.startBtn.disabled=false; this.pauseBtn.disabled=true; this.draw();
+      }
+      tick(){
+        this.left--; this.toSignal--;
+        if(this.toSignal<=0){ this.beep(); this.count++; this.toSignal=this.signal; this.countEl.textContent=this.count; }
+        if(this.left<=0){ this.finish(); return; }
+        this.draw();
+      }
+      finish(){ this.run=false; clearInterval(this.t); this.left=0; this.toSignal=0;
+        this.status.textContent='Timer beendet!'; this.startBtn.disabled=true; this.pauseBtn.disabled=true; this.draw(); this.jingle();
+      }
+      draw(){
+        const m=Math.floor(this.left/60).toString().padStart(2,'0');
+        const s=(this.left%60).toString().padStart(2,'0');
+        this.time.textContent=`${m}:${s}`;
+        const p=((this.total-this.left)/this.total)*100; this.prog.style.width=p+'%';
+        this.next.textContent=(this.toSignal>0?this.toSignal:0)+'s';
+      }
+      beep(){
+        try{
+          const ac=new (window.AudioContext||window.webkitAudioContext)();
+          const o=ac.createOscillator(), g=ac.createGain();
+          o.connect(g); g.connect(ac.destination);
+          o.frequency.value=800; o.type='sine';
+          g.gain.setValueAtTime(0.25, ac.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.01, ac.currentTime+0.25);
+          o.start(); o.stop(ac.currentTime+0.25);
+          if(navigator.vibrate) navigator.vibrate(60);
+        }catch{}
+      }
+      jingle(){
+        try{
+          const ac=new (window.AudioContext||window.webkitAudioContext)();
+          [523.25,659.25,783.99,1046.5].forEach((f,i)=>{
+            const o=ac.createOscillator(), g=ac.createGain();
+            o.connect(g); g.connect(ac.destination); o.frequency.value=f; o.type='sine';
+            const t=ac.currentTime+i*0.28; g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.35, t+0.05);
+            g.gain.exponentialRampToValueAtTime(0.01, t+0.25);
+            o.start(t); o.stop(t+0.3);
+          });
+        }catch{}
+      }
+    }
+    document.addEventListener('DOMContentLoaded',()=>new IntervalTimer());
+  </script>
+</body>
+</html>
