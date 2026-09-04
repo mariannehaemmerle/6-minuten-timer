@@ -1,0 +1,27 @@
+{
+  "name": "instagram-freebie-bot",
+  "version": "1.0.0",
+  "description": "Instagram Automatisierung mit Double Opt-In für Freebies",
+  "main": "backend/server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node backend/server.js",
+    "client": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start": "node backend/server.js"
+  },
+  "keywords": ["instagram", "chatbot", "freebie", "automation"],
+  "author": "Marianne Hämmerle",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.5.0",
+    "sqlite3": "^5.1.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
