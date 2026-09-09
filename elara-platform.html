@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ELARA Kursplattform</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #d4ccc4;
+      color: #333;
+    }
+
+    .header {
+      background: #d4ccc4;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #c9bfb7;
+    }
+
+    .header-title {
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-title h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .header-title p {
+      font-size: 11px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 16px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .content {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      color: #999;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.2;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .product-card h3 {
+      font-size: 24px;
+      color: #b89968;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .product-image {
+      height: 180px;
+      background: #f5f3f0;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #ccc;
+      position: relative;
+    }
+
+    .price-badge {
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      background: #b89968;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .features-container {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .features-header {
+      padding: 20px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .feature-item {
+      padding: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .feature-item:last-child {
+      border-bottom: none;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .feature-icon {
+      font-size: 20px;
+      color: #b89968;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .feature-description {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-left: 32px;
+    }
+
+    .testimonial {
+      margin: 32px 16px;
+      padding: 24px 16px;
+      text-align: center;
+      font-size: 16px;
+      color: #666;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .button-container {
+      text-align: center;
+      padding: 24px 16px;
+    }
+
+    .btn-save {
+      background: #d32f2f;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-save:hover {
+      background: #b71c1c;
+    }
+
+    .btn-save:active {
+      transform: scale(0.98);
+    }
+
+    @media (max-width: 480px) {
+      .section-title {
+        font-size: 28px;
+      }
+
+      .product-card h3 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div style="width: 24px;">◀</div>
+    <div class="header-title">
+      <h2>ELARA Kursplattform</h2>
+      <p>eln.elara-kursplattform.de</p>
+    </div>
+    <div class="header-nav">
+      <span>⤫</span>
+      <span>⋮</span>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="section-header">
+      <div class="section-label">DAS ALLES IST DABEI</div>
+      <h1 class="section-title">Das ist alles mit dabei</h1>
+    </div>
+
+    <div class="product-card">
+      <h3>CONTENT<br>STUDIO</h3>
+      <div class="product-image">
+        <div class="price-badge">79€</div>
+        <div style="text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 8px;">📱 💻 📱</div>
+          <div style="font-size: 12px; color: #999;">Geräte-Mockups</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features-container">
+      <div class="features-header">Content Studio</div>
+
+      <div class="feature-item">
+        <div class="feature-header">
+          <span class="feature-icon">◆</span>
+          <span class="feature-title">Profil-Analyse auf Knopfdruck</span>
+        </div>
+        <div class="feature-description">
+          Du siehst in Sekunden, welcher Content bei dir abgeht, was du sofort streichen solltest, und wovon du dringend mehr brauchst. Nie wieder raten.
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-header">
+          <span class="feature-icon">◆</span>
+          <span class="feature-title">Bio-Analyse</span>
+        </div>
+        <div class="feature-description">
+          Deine Bio entscheidet in 3 Sekunden, ob jemand folgt oder wegklickt. Du weißt danach genau, was du ändern musst, und warum.
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-header">
+          <span class="feature-icon">◆</span>
+          <span class="feature-title">Wettbewerber-Analyse + fertige Ideen</span>
+        </div>
+        <div class="feature-description">
+          Schau dir an, was bei anderen funktioniert, und bekomm mit einem Klick direkt Ideen, wie du das für deinen Account umsetzt. Nicht kopieren. Besser machen.
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-header">
+          <span class="feature-icon">◆</span>
+          <span class="feature-title">Storys, Reels & Karussells</span>
+        </div>
+        <div class="feature-description">
+          Aufeinander aufbauend, direkt mit Canva und Claude verknüpft. Du öffnest das Tool, und dein Content entsteht.
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-header">
+          <span class="feature-icon">◆</span>
+          <span class="feature-title" style="color: #b89968;">Dein Content-Plan</span>
+        </div>
+        <div class="feature-description">
+          Voller Kalender? Kein Problem. Du weißt immer, was du postest, und produzierst es in einem Bruchteil der Zeit.
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial">
+      Ich hab Stunden damit verbracht, Content-Tools zu testen und Wettbewerber manuell zu analysieren, und trotzdem nicht gewusst, was ich posten soll. Genau deshalb hab ich das Content Studio gebaut: weil ich wollte, dass du das alles nie wieder selbst durchmachen musst.
+    </div>
+  </div>
+
+  <div class="button-container">
+    <button class="btn-save">Merken</button>
+  </div>
+</body>
+</html>
