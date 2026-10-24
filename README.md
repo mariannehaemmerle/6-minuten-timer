@@ -16,7 +16,7 @@ Erstellt von **Marianne Hämmerle**.
 - Jedes Buch hat einen eigenen Link zum Teilen: `…/flipbook/?buch=<id>`
 - Neues Buch: PDF (oder .txt) in `flipbook/books/` legen und in `flipbook/books.json` eintragen
 - In .txt-Büchern trennt eine Zeile `---` die Seiten, `# ` macht eine Überschrift
-- Journal-Seiten: eine Zeile `[schreiben]` in .txt-Büchern, bei PDFs `"schreibseiten": [3, 4]` (oder `"alle"`) in books.json – Geschriebenes bleibt auf dem eigenen Gerät gespeichert
+- Journal-Seiten: In PDFs (z. B. aus Canva) werden Schreiblinien automatisch erkannt – man tippt direkt auf die Linie. Abschalten mit `"schreibseiten": "keine"` in books.json. In .txt-Büchern macht eine Zeile `[schreiben]` ein Schreibfeld. Geschriebenes bleibt auf dem eigenen Gerät gespeichert
 
 ---
 © 2025 Marianne Hämmerle

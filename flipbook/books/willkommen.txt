@@ -44,7 +44,7 @@ Was du schreibst, wird automatisch gespeichert – auf deinem Gerät. Jede Perso
 
 Mit „Notizen ⬇“ oben kannst du alles Geschriebene als Textdatei sichern.
 
-Eine Journal-Seite entsteht in einer .txt-Datei mit einer Zeile [schreiben]. Bei PDFs gibst du in books.json an, welche Seiten beschreibbar sind.
+Bei PDFs – zum Beispiel aus Canva – erkennt das Flipbook die Schreiblinien von selbst. Man tippt einfach auf eine Linie und schreibt. Mit der Eingabetaste geht es zur nächsten Linie.
 ---
 # Viel Freude beim Lesen!
 

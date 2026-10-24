@@ -59,6 +59,8 @@
     textarea.inline{flex:1;min-height:3.2em;background-image:repeating-linear-gradient(transparent 0 calc(1.6em - 1px),#cbd5e1 calc(1.6em - 1px) 1.6em);background-attachment:local}
     textarea.overlay{position:absolute;inset:8% 9% 9%;width:auto;font-family:Georgia,'Times New Roman',serif;font-size:calc(var(--ph) * .03);border-radius:6px;transition:background-color .2s}
     textarea.overlay:focus{background-color:rgba(255,255,255,.55)}
+    input.line{position:absolute;border:0;outline:0;background:transparent;color:#1e3a8a;font-family:Georgia,'Times New Roman',serif;padding:0 .15em;margin:0;line-height:1.2;border-radius:3px}
+    input.line:focus{background:rgba(5,150,105,.08)}
     .num{position:absolute;bottom:3%;left:0;right:0;text-align:center;font-size:12px;color:#9ca3af;font-family:system-ui}
     .loading{color:#9ca3af;font-size:14px}
 
@@ -213,7 +215,9 @@
         await page.render({canvasContext: c.getContext('2d'), viewport: view}).promise;
         return c;
       })());
+      const lineCache = {};
       return {
+        lines: i => lineCache[i] || (lineCache[i] = draw(i).then(findLines)),
         count: doc.numPages,
         aspect: vp.width / vp.height,
         render: async i => {
@@ -224,6 +228,61 @@
           return c;
         }
       };
+    }
+
+    // Erkennt waagrechte Schreiblinien (auch gestrichelt/gepunktet) auf einer gerenderten Seite.
+    // Ergebnis: [{y, x1, x2}] als Anteile von Seitenhöhe/-breite, y = Oberkante der Linie.
+    function findLines(c){
+      const W = c.width, H = c.height;
+      const data = c.getContext('2d').getImageData(0, 0, W, H).data;
+      // Hintergrundfarbe = häufigste Farbe
+      const counts = {};
+      const step = Math.max(1, Math.floor(W * H / 20000));
+      for(let n = 0; n < W * H; n += step){
+        const p = n * 4, key = (data[p] >> 4) << 8 | (data[p + 1] >> 4) << 4 | (data[p + 2] >> 4);
+        counts[key] = (counts[key] || 0) + 1;
+      }
+      const bgKey = +Object.keys(counts).reduce((a, b) => counts[a] >= counts[b] ? a : b);
+      const br = (bgKey >> 8) * 16 + 8, bgG = (bgKey >> 4 & 15) * 16 + 8, bb = (bgKey & 15) * 16 + 8;
+      const ink = p => Math.abs(data[p] - br) + Math.abs(data[p + 1] - bgG) + Math.abs(data[p + 2] - bb) > 60;
+
+      const gap = Math.max(3, W * .015), minLen = W * .2;
+      let open = [], done = [];
+      for(let y = 0; y < H; y++){
+        const segs = [];
+        let start = -1, last = -1, filled = 0;
+        for(let x = 0; x <= W; x++){
+          if(x < W && ink((y * W + x) * 4)){
+            if(start < 0 || x - last > gap){
+              if(start >= 0 && last - start >= minLen && filled / (last - start + 1) > .4) segs.push([start, last]);
+              start = x; filled = 0;
+            }
+            last = x; filled++;
+          }
+        }
+        if(start >= 0 && last - start >= minLen && filled / (last - start + 1) > .4) segs.push([start, last]);
+        const next = [];
+        segs.forEach(([a, b]) => {
+          const g = open.find(g => Math.min(b, g.x2) - Math.max(a, g.x1) > (b - a) * .5);
+          if(g){ g.y2 = y; g.x1 = Math.min(g.x1, a); g.x2 = Math.max(g.x2, b); next.push(g); open = open.filter(o => o !== g); }
+          else next.push({y1: y, y2: y, x1: a, x2: b});
+        });
+        done.push(...open);
+        open = next;
+      }
+      done.push(...open);
+      const maxThick = Math.max(4, H * .012);
+      // eine echte Linie hat knapp darüber und darunter (fast) nichts – Textzeilen schon
+      const clear = g => [g.y1 - 3, g.y1 - 2, g.y2 + 2, g.y2 + 3].every(y => {
+        if(y < 0 || y >= H) return true;
+        let n = 0;
+        for(let x = g.x1; x <= g.x2; x++) if(ink((y * W + x) * 4)) n++;
+        return n / (g.x2 - g.x1 + 1) < .08;
+      });
+      return done
+        .filter(g => g.y2 - g.y1 + 1 <= maxThick && clear(g))
+        .map(g => ({y: g.y1 / H, x1: g.x1 / W, x2: (g.x2 + 1) / W}))
+        .sort((a, b) => a.y - b.y || a.x1 - b.x1);
     }
 
     // ---------- Leser ----------
@@ -241,8 +300,9 @@
         const isPdf = meta.src || /\.pdf$/i.test(meta.datei);
         book = Object.assign(await (isPdf ? pdfBook(src) : textBook(src)), {id: meta.id, titel: meta.titel});
         const sp = meta.schreibseiten;
+        book.writeLines = sp !== 'keine';
         book.writePage = i => sp === 'alle' || (Array.isArray(sp) && sp.includes(i + 1));
-        book.hasWrite = book.hasWrite || !!sp;
+        book.hasWrite = book.hasWrite || (isPdf && sp !== 'keine') || !!sp;
         book.noteId = meta.id || 'lokal:' + meta.titel;
       }catch(e){
         $('right').innerHTML = `<div class="page"><span class="loading">Buch konnte nicht geöffnet werden.<br>${esc(e.message || '')}</span></div>`;
@@ -284,37 +344,67 @@
       if(!book || i < 0 || i >= book.count){ box.className = 'page blank'; return box; }
       box.className = 'page';
       box.innerHTML = '<span class="loading">…</span>';
-      book.render(i).then(el => {
+      book.render(i).then(async el => {
         box.innerHTML = '';
         box.appendChild(el);
-        if(book.writePage(i)){
-          const ta = document.createElement('textarea');
-          ta.className = 'write overlay'; ta.placeholder = 'Hier schreiben …';
-          box.appendChild(ta);
-        }
+        await addWriting(box, i);
         wireNotes(box, i);
         const n = document.createElement('div'); n.className = 'num'; n.textContent = i + 1;
         box.appendChild(n);
       }).catch(() => { box.innerHTML = '<span class="loading">Seite fehlt</span>'; });
       return box;
     }
+    // Auf erkannten Linien je ein Schreibfeld, sonst (falls freigegeben) ein Feld über die ganze Seite
+    async function addWriting(box, i){
+      const lines = book.lines && book.writeLines ? await book.lines(i).catch(() => []) : [];
+      if(lines.length >= 2 || (lines.length && book.writePage(i))){
+        const ys = lines.map(l => l.y);
+        const gaps = ys.slice(1).map((y, k) => y - ys[k]).filter(d => d > .01).sort((a, b) => a - b);
+        const typical = gaps.length ? gaps[gaps.length >> 1] : .04;
+        lines.forEach((l, k) => {
+          const above = lines.slice(0, k).filter(o => o.y < l.y - .005 && o.x2 > l.x1 && o.x1 < l.x2).pop();
+          const room = Math.min(above ? l.y - above.y : typical, typical * 1.5, .06);
+          const font = room * .55;
+          const inp = document.createElement('input');
+          inp.className = 'write line';
+          inp.style.left = (l.x1 * 100) + '%';
+          inp.style.width = ((l.x2 - l.x1) * 100) + '%';
+          inp.style.top = ((l.y - font * 1.25) * 100) + '%';
+          inp.style.height = (font * 1.25 * 100) + '%';
+          inp.style.fontSize = `calc(var(--ph) * ${font.toFixed(4)})`;
+          box.appendChild(inp);
+        });
+      }else if(book.writePage(i)){
+        const ta = document.createElement('textarea');
+        ta.className = 'write overlay'; ta.placeholder = 'Hier schreiben …';
+        box.appendChild(ta);
+      }
+    }
+
     // Schreibfelder: werden nur auf dem eigenen Gerät gespeichert
     function noteKey(i, k){ return `flipbook:notiz:${book.noteId}:${i}:${k}`; }
     function wireNotes(box, i){
-      box.querySelectorAll('textarea.write').forEach((ta, k) => {
+      const fields = [...box.querySelectorAll('.write')];
+      fields.forEach((ta, k) => {
         const key = noteKey(i, k);
         ta.value = store(key) || '';
         ta.addEventListener('input', () => store(key, ta.value));
         ['click', 'touchstart', 'touchend'].forEach(ev => ta.addEventListener(ev, e => e.stopPropagation()));
+        // Enter springt auf die nächste Linie
+        if(ta.tagName === 'INPUT') ta.addEventListener('keydown', e => {
+          if(e.key === 'Enter' && fields[k + 1]){ e.preventDefault(); fields[k + 1].focus(); }
+        });
       });
     }
     function exportNotes(){
       const out = [];
       for(let i = 0; i < book.count; i++){
-        for(let k = 0; k < 10; k++){
+        const parts = [];
+        for(let k = 0; k < 200; k++){
           const v = store(noteKey(i, k));
-          if(v && v.trim()) out.push(`--- Seite ${i + 1} ---\n${v.trim()}\n`);
+          if(v && v.trim()) parts.push(v.trim());
         }
+        if(parts.length) out.push(`--- Seite ${i + 1} ---\n${parts.join('\n')}\n`);
       }
       if(!out.length){ toast('Noch nichts geschrieben'); return; }
       const blob = new Blob([`${book.titel || 'Buch'} – meine Notizen\n\n` + out.join('\n')], {type: 'text/plain'});
@@ -418,7 +508,7 @@
       if(Math.abs(dx) > 40){ e.preventDefault(); flip(dx < 0 ? 1 : -1); }
     });
     document.addEventListener('keydown', e => {
-      if($('reader').classList.contains('hidden') || e.target.tagName === 'TEXTAREA') return;
+      if($('reader').classList.contains('hidden') || /^(TEXTAREA|INPUT)$/.test(e.target.tagName)) return;
       if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); flip(1); }
       if(e.key === 'ArrowLeft') { e.preventDefault(); flip(-1); }
       if(e.key === 'Escape') $('back').click();
