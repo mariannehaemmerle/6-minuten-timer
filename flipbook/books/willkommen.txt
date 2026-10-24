@@ -1,0 +1,37 @@
+# Willkommen im Flipbook
+
+Mein eigenes kleines Bücherregal zum Durchblättern.
+
+von Marianne Hämmerle
+---
+# So blätterst du
+
+Tippe oder klicke auf die rechte Seite, um weiterzublättern – auf die linke Seite, um zurückzugehen.
+
+Auf dem Handy kannst du auch wischen. Am Computer funktionieren die Pfeiltasten.
+
+Das Flipbook merkt sich, wo du aufgehört hast.
+---
+# Ein Buch teilen
+
+Oben rechts findest du den Knopf „Link teilen“.
+
+Damit verschickst du genau dieses Buch – per WhatsApp, E-Mail oder wo immer du möchtest. Wer den Link öffnet, landet direkt im Buch.
+---
+# Ein neues Buch hinzufügen
+
+1. Lege eine PDF-Datei in den Ordner flipbook/books.
+
+2. Trage das Buch in der Datei flipbook/books.json ein – mit einer kurzen ID, dem Titel und dem Dateinamen.
+
+3. Fertig! Der Link lautet dann: …/flipbook/?buch=deine-id
+---
+# Eigene Texte
+
+Statt einer PDF kannst du auch eine einfache Textdatei (.txt) verwenden – so wie dieses Buch.
+
+Eine Zeile mit drei Strichen trennt die Seiten. Eine Zeile mit # am Anfang wird zur Überschrift.
+---
+# Viel Freude beim Lesen!
+
+Ende.

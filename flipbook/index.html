@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Flipbook</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <style>
+    :root{--bg:#064e3b;--card:#0b3b2d;--line:#1f6b53;--deep:#052e24;--accent:#059669;--paper:#fdfbf5;--ink:#1f2937}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#fff}
+    button,.btn{cursor:pointer;border:0;border-radius:12px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:600;font-size:15px;text-decoration:none;display:inline-block}
+    button:disabled{opacity:.4;cursor:default}
+    .ghost{background:#6b7280}
+    .hidden{display:none!important}
+
+    /* Bücherregal */
+    #library{max-width:900px;margin:0 auto;padding:24px 16px 48px}
+    #library h1{margin:8px 0 4px;font-size:30px;text-align:center}
+    .sub{text-align:center;color:#a7f3d0;margin:0 0 24px}
+    .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:18px}
+    .tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px}
+    .cover{aspect-ratio:2/3;border-radius:6px 10px 10px 6px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;box-shadow:inset 6px 0 0 rgba(0,0,0,.18),0 6px 14px rgba(0,0,0,.35);transition:transform .2s}
+    .cover:hover{transform:translateY(-3px)}
+    .cover b{font-size:17px;line-height:1.25}
+    .cover span{font-size:13px;opacity:.85}
+    .tile .row{display:flex;gap:6px}
+    .tile .row button{flex:1;padding:8px;font-size:13px}
+    .local{margin-top:28px;background:var(--deep);border-radius:14px;padding:16px;text-align:center}
+    .local p{margin:0 0 10px;color:#a7f3d0;font-size:14px}
+    #msg{text-align:center;color:#fde68a}
+
+    /* Leser */
+    #reader{position:fixed;inset:0;display:flex;flex-direction:column}
+    .bar{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--deep)}
+    .bar .title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+    .bar button{padding:8px 12px;font-size:14px}
+    #stage{flex:1;display:flex;align-items:center;justify-content:center;perspective:2200px;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+    .book{position:relative}
+    .half{position:absolute;top:0;width:var(--pw);height:var(--ph)}
+    .half.left{left:0}
+    .half.right{left:var(--pw)}
+    .single .half.left{display:none}
+    .single .half.right{left:0}
+    .page{position:absolute;inset:0;background:var(--paper);color:var(--ink);overflow:hidden;display:flex;align-items:center;justify-content:center}
+    .page.blank{background:transparent}
+    .page canvas{width:100%;height:100%;display:block}
+    .left .page{border-radius:6px 0 0 6px;box-shadow:-4px 4px 16px rgba(0,0,0,.35);background-image:linear-gradient(to left,rgba(0,0,0,.12),rgba(0,0,0,0) 8%)}
+    .right .page{border-radius:0 6px 6px 0;box-shadow:4px 4px 16px rgba(0,0,0,.35);background-image:linear-gradient(to right,rgba(0,0,0,.12),rgba(0,0,0,0) 8%)}
+    .single .right .page{border-radius:6px}
+    .page.blank{box-shadow:none!important;background-image:none!important}
+    .text{position:absolute;inset:0;padding:9% 10%;font-family:Georgia,'Times New Roman',serif;font-size:calc(var(--ph) * .032);line-height:1.5;overflow:hidden}
+    .text h2{font-size:1.45em;margin:0 0 .8em;line-height:1.2;color:#064e3b}
+    .text p{margin:0 0 .8em}
+    .num{position:absolute;bottom:3%;left:0;right:0;text-align:center;font-size:12px;color:#9ca3af;font-family:system-ui}
+    .loading{color:#9ca3af;font-size:14px}
+
+    .leaf{position:absolute;top:0;width:var(--pw);height:var(--ph);transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,.1,.3,1);z-index:5}
+    .leaf.from-right{left:var(--pw);transform-origin:left center}
+    .leaf.from-left{left:0;transform-origin:right center}
+    .single .leaf.from-right{left:0}
+    .leaf .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+    .leaf .back{transform:rotateY(180deg)}
+    .leaf .page{box-shadow:0 0 18px rgba(0,0,0,.3)}
+
+    .foot{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 16px 14px}
+    #pos{min-width:110px;text-align:center;font-variant-numeric:tabular-nums;color:#a7f3d0}
+    #toast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20}
+    #toast.show{opacity:1}
+  </style>
+</head>
+<body>
+  <main id="library">
+    <h1>📚 Mein Flipbook</h1>
+    <p class="sub">Bücher zum Durchblättern – jedes mit eigenem Link</p>
+    <div id="msg"></div>
+    <div id="shelf" class="shelf"></div>
+    <div class="local">
+      <p>Eine PDF von deinem Gerät ansehen (wird nicht hochgeladen und kann nicht geteilt werden)</p>
+      <label class="btn ghost">PDF auswählen<input id="file" type="file" accept="application/pdf" hidden></label>
+    </div>
+  </main>
+
+  <section id="reader" class="hidden">
+    <div class="bar">
+      <button id="back" class="ghost" title="Zum Bücherregal">←</button>
+      <div id="rtitle" class="title"></div>
+      <button id="share">Link teilen</button>
+    </div>
+    <div id="stage">
+      <div id="book" class="book">
+        <div id="left" class="half left"></div>
+        <div id="right" class="half right"></div>
+      </div>
+    </div>
+    <div class="foot">
+      <button id="prev" class="ghost">‹ Zurück</button>
+      <div id="pos"></div>
+      <button id="next">Weiter ›</button>
+    </div>
+  </section>
+  <div id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    const PDF_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const $ = id => document.getElementById(id);
+    let books = [];
+
+    // Zustand des geöffneten Buchs
+    let book = null;      // {id, titel, count, aspect, render(i) -> Promise<Element>}
+    let cur = 0;          // Doppelseite: Index der rechten Seite; Einzelseite: Index der Seite
+    let spread = true;
+    let busy = false;
+
+    function toast(text){
+      const t = $('toast'); t.textContent = text; t.classList.add('show');
+      clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+    function store(key, val){
+      try{ if(val === undefined) return localStorage.getItem(key); localStorage.setItem(key, val); }catch(e){ return null; }
+    }
+    function esc(s){ return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    function bookLink(id, page){
+      const u = new URL(location.pathname, location.origin);
+      u.searchParams.set('buch', id);
+      if(page) u.searchParams.set('seite', page);
+      return u.toString();
+    }
+
+    // ---------- Bücherregal ----------
+    async function loadBooks(){
+      try{
+        const r = await fetch('books.json', {cache:'no-cache'});
+        books = await r.json();
+      }catch(e){
+        $('msg').textContent = 'Die Bücherliste (books.json) konnte nicht geladen werden.';
+        books = [];
+      }
+    }
+    function showLibrary(){
+      $('reader').classList.add('hidden');
+      $('library').classList.remove('hidden');
+      document.title = 'Flipbook';
+      const shelf = $('shelf'); shelf.innerHTML = '';
+      books.forEach(b => {
+        const tile = document.createElement('div'); tile.className = 'tile';
+        tile.innerHTML = `
+          <div class="cover" style="background:${esc(b.farbe || '#059669')}">
+            <b>${esc(b.titel || b.id)}</b><span>${esc(b.autor || '')}</span>
+          </div>
+          <div class="row"><button class="read">Lesen</button><button class="ghost link">Link</button></div>`;
+        const open = () => { history.pushState(null, '', bookLink(b.id)); route(); };
+        tile.querySelector('.cover').onclick = open;
+        tile.querySelector('.read').onclick = open;
+        tile.querySelector('.link').onclick = () => shareLink(bookLink(b.id), b.titel);
+        shelf.appendChild(tile);
+      });
+      if(!books.length && !$('msg').textContent) $('msg').textContent = 'Noch keine Bücher eingetragen.';
+    }
+    async function shareLink(url, title){
+      if(navigator.share){
+        try{ await navigator.share({title: title || 'Flipbook', url}); return; }catch(e){ if(e.name === 'AbortError') return; }
+      }
+      try{ await navigator.clipboard.writeText(url); toast('Link kopiert ✓'); }
+      catch(e){ prompt('Link zum Kopieren:', url); }
+    }
+
+    // ---------- Buchquellen ----------
+    async function textBook(url){
+      const r = await fetch(url);
+      if(!r.ok) throw new Error('Datei nicht gefunden');
+      const raw = await r.text();
+      const pages = raw.replace(/\r/g, '').split(/^\s*---\s*$/m).map(p => p.trim());
+      return {
+        count: pages.length,
+        aspect: 2/3,
+        render: async i => {
+          const d = document.createElement('div'); d.className = 'text';
+          d.innerHTML = pages[i].split(/\n\s*\n/).map(block => {
+            block = block.trim();
+            if(block.startsWith('# ')) return `<h2>${esc(block.slice(2))}</h2>`;
+            return `<p>${esc(block).replace(/\n/g, '<br>')}</p>`;
+          }).join('');
+          return d;
+        }
+      };
+    }
+    async function pdfBook(src){
+      if(!window.pdfjsLib) throw new Error('PDF-Anzeige konnte nicht geladen werden');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER;
+      const doc = await pdfjsLib.getDocument(src).promise;
+      const first = await doc.getPage(1);
+      const vp = first.getViewport({scale:1});
+      const cache = {};
+      const draw = i => cache[i] || (cache[i] = (async () => {
+        const page = await doc.getPage(i + 1);
+        const base = page.getViewport({scale:1});
+        const target = Math.min(2400, Math.max(1000, parseFloat(getComputedStyle($('book')).getPropertyValue('--ph')) * (devicePixelRatio || 1)));
+        const view = page.getViewport({scale: target / base.height});
+        const c = document.createElement('canvas');
+        c.width = Math.round(view.width); c.height = Math.round(view.height);
+        await page.render({canvasContext: c.getContext('2d'), viewport: view}).promise;
+        return c;
+      })());
+      return {
+        count: doc.numPages,
+        aspect: vp.width / vp.height,
+        render: async i => {
+          const src = await draw(i);
+          const c = document.createElement('canvas');
+          c.width = src.width; c.height = src.height;
+          c.getContext('2d').drawImage(src, 0, 0);
+          return c;
+        }
+      };
+    }
+
+    // ---------- Leser ----------
+    async function openBook(meta, startPage){
+      $('library').classList.add('hidden');
+      $('reader').classList.remove('hidden');
+      $('rtitle').textContent = meta.titel || 'Buch';
+      $('share').classList.toggle('hidden', !meta.id);
+      document.title = (meta.titel || 'Buch') + ' – Flipbook';
+      $('left').innerHTML = ''; $('right').innerHTML = '<div class="page"><span class="loading">Wird geladen …</span></div>';
+      layout(2/3);
+      try{
+        const src = meta.src || meta.datei;
+        const isPdf = meta.src || /\.pdf$/i.test(meta.datei);
+        book = Object.assign(await (isPdf ? pdfBook(src) : textBook(src)), {id: meta.id, titel: meta.titel});
+      }catch(e){
+        $('right').innerHTML = `<div class="page"><span class="loading">Buch konnte nicht geöffnet werden.<br>${esc(e.message || '')}</span></div>`;
+        book = null; return;
+      }
+      const saved = meta.id ? parseInt(store('flipbook:' + meta.id), 10) : NaN;
+      const start = startPage != null ? startPage : (isNaN(saved) ? 0 : saved);
+      layout(book.aspect);
+      goTo(start);
+    }
+
+    function layout(aspect){
+      const stage = $('stage');
+      const W = stage.clientWidth - 32, H = stage.clientHeight - 16;
+      spread = W > 700 && W / H > aspect * 1.25;
+      let ph = Math.min(H, W / (spread ? 2 : 1) / aspect);
+      let pw = ph * aspect;
+      const el = $('book');
+      el.style.setProperty('--pw', pw + 'px');
+      el.style.setProperty('--ph', ph + 'px');
+      el.style.width = (spread ? 2 * pw : pw) + 'px';
+      el.style.height = ph + 'px';
+      el.classList.toggle('single', !spread);
+    }
+
+    // erlaubte Positionen normalisieren
+    function norm(p){
+      if(!book) return 0;
+      p = Math.max(0, Math.min(p, book.count - 1));
+      if(spread) p = p % 2 ? p + 1 : p; // rechte Seite einer Doppelseite ist immer gerade
+      return p;
+    }
+    function hasNext(){ return book && cur + 1 < book.count; }
+    function hasPrev(){ return book && cur > 0; }
+
+    function pageBox(i){
+      const box = document.createElement('div');
+      if(!book || i < 0 || i >= book.count){ box.className = 'page blank'; return box; }
+      box.className = 'page';
+      box.innerHTML = '<span class="loading">…</span>';
+      book.render(i).then(el => {
+        box.innerHTML = '';
+        box.appendChild(el);
+        const n = document.createElement('div'); n.className = 'num'; n.textContent = i + 1;
+        box.appendChild(n);
+      }).catch(() => { box.innerHTML = '<span class="loading">Seite fehlt</span>'; });
+      return box;
+    }
+    function fill(slot, i){ $(slot).innerHTML = ''; $(slot).appendChild(pageBox(i)); }
+
+    function draw(){
+      if(spread) fill('left', cur - 1);
+      fill('right', cur);
+      updateUi();
+      // Nachbarseiten vorladen
+      [cur + 1, cur + 2, cur + 3, cur - 2, cur - 3].forEach(i => { if(book && i >= 0 && i < book.count) book.render(i).catch(() => {}); });
+    }
+    function updateUi(){
+      $('prev').disabled = !hasPrev();
+      $('next').disabled = !hasNext();
+      if(!book) return;
+      const shown = spread ? [cur - 1, cur].filter(i => i >= 0 && i < book.count).map(i => i + 1) : [cur + 1];
+      $('pos').textContent = `Seite ${shown.join('–')} / ${book.count}`;
+      if(book.id){
+        store('flipbook:' + book.id, String(cur));
+        const u = new URL(location.href);
+        u.searchParams.set('seite', shown[0]);
+        history.replaceState(null, '', u);
+      }
+    }
+    function goTo(p){ cur = norm(p); draw(); }
+
+    function flip(dir){
+      if(busy || !book || (dir > 0 ? !hasNext() : !hasPrev())) return;
+      busy = true;
+      const step = spread ? 2 : 1;
+      const leaf = document.createElement('div');
+      const front = document.createElement('div'); front.className = 'face front';
+      const back = document.createElement('div'); back.className = 'face back';
+      leaf.append(front, back);
+      let from, to;
+
+      if(dir > 0){
+        leaf.className = 'leaf from-right';
+        front.appendChild(pageBox(cur));
+        back.appendChild(spread ? pageBox(cur + 1) : blankBack());
+        fill('right', cur + step);
+        from = 'rotateY(0deg)'; to = 'rotateY(-180deg)';
+      }else if(spread){
+        leaf.className = 'leaf from-left';
+        front.appendChild(pageBox(cur - 1));
+        back.appendChild(pageBox(cur - 2));
+        fill('left', cur - 3);
+        from = 'rotateY(0deg)'; to = 'rotateY(180deg)';
+      }else{
+        leaf.className = 'leaf from-right';
+        // im Einzelmodus kommt die vorige Seite von links zurück
+        front.appendChild(pageBox(cur - 1));
+        back.appendChild(blankBack());
+        from = 'rotateY(-180deg)'; to = 'rotateY(0deg)';
+      }
+      leaf.style.transform = from;
+      $('book').appendChild(leaf);
+
+      let done = false;
+      const finish = () => {
+        if(done) return; done = true;
+        leaf.remove();
+        cur = norm(cur + dir * step);
+        draw();
+        busy = false;
+      };
+      leaf.addEventListener('transitionend', finish);
+      setTimeout(finish, 900);
+      requestAnimationFrame(() => requestAnimationFrame(() => { leaf.style.transform = to; }));
+    }
+    function blankBack(){
+      const d = document.createElement('div'); d.className = 'page';
+      d.style.background = '#efe9da';
+      return d;
+    }
+
+    // ---------- Bedienung ----------
+    $('next').onclick = () => flip(1);
+    $('prev').onclick = () => flip(-1);
+    $('back').onclick = () => { history.pushState(null, '', location.pathname); route(); };
+    $('share').onclick = () => book && book.id && shareLink(bookLink(book.id), book.titel);
+
+    $('stage').addEventListener('click', e => {
+      if(!book) return;
+      const r = $('book').getBoundingClientRect();
+      if(e.clientX < r.left + r.width / 2) flip(-1); else flip(1);
+    });
+    let touchX = null;
+    $('stage').addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
+    $('stage').addEventListener('touchend', e => {
+      if(touchX == null) return;
+      const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+      if(Math.abs(dx) > 40){ e.preventDefault(); flip(dx < 0 ? 1 : -1); }
+    });
+    document.addEventListener('keydown', e => {
+      if($('reader').classList.contains('hidden')) return;
+      if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); flip(1); }
+      if(e.key === 'ArrowLeft') { e.preventDefault(); flip(-1); }
+      if(e.key === 'Escape') $('back').click();
+    });
+    let rt;
+    addEventListener('resize', () => {
+      clearTimeout(rt);
+      rt = setTimeout(() => { if(book && !$('reader').classList.contains('hidden')){ layout(book.aspect); goTo(cur); } }, 150);
+    });
+
+    $('file').onchange = e => {
+      const f = e.target.files[0];
+      if(!f) return;
+      openBook({titel: f.name.replace(/\.pdf$/i, ''), src: URL.createObjectURL(f)}, 0);
+      e.target.value = '';
+    };
+
+    function route(){
+      const q = new URLSearchParams(location.search);
+      const id = q.get('buch');
+      if(!id){ book = null; showLibrary(); return; }
+      const meta = books.find(b => b.id === id);
+      if(!meta){ book = null; showLibrary(); $('msg').textContent = `Das Buch „${id}“ wurde nicht gefunden.`; return; }
+      $('msg').textContent = '';
+      const s = parseInt(q.get('seite'), 10);
+      openBook(meta, isNaN(s) ? null : s - 1);
+    }
+    addEventListener('popstate', route);
+
+    loadBooks().then(route);
+  </script>
+</body>
+</html>
