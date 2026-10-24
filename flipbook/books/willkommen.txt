@@ -32,6 +32,20 @@ Statt einer PDF kannst du auch eine einfache Textdatei (.txt) verwenden – so w
 
 Eine Zeile mit drei Strichen trennt die Seiten. Eine Zeile mit # am Anfang wird zur Überschrift.
 ---
+# Journal-Seiten
+
+Auf manchen Seiten kannst du selbst schreiben – so wie hier. Tippe einfach auf die Linien:
+
+[schreiben]
+---
+# Wo wird es gespeichert?
+
+Was du schreibst, wird automatisch gespeichert – auf deinem Gerät. Jede Person, die den Link öffnet, hat also ihr eigenes Journal.
+
+Mit „Notizen ⬇“ oben kannst du alles Geschriebene als Textdatei sichern.
+
+Eine Journal-Seite entsteht in einer .txt-Datei mit einer Zeile [schreiben]. Bei PDFs gibst du in books.json an, welche Seiten beschreibbar sind.
+---
 # Viel Freude beim Lesen!
 
 Ende.

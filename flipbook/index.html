@@ -53,6 +53,12 @@
     .text{position:absolute;inset:0;padding:9% 10%;font-family:Georgia,'Times New Roman',serif;font-size:calc(var(--ph) * .032);line-height:1.5;overflow:hidden}
     .text h2{font-size:1.45em;margin:0 0 .8em;line-height:1.2;color:#064e3b}
     .text p{margin:0 0 .8em}
+    .text{display:flex;flex-direction:column}
+    textarea.write{font:inherit;color:#1e3a8a;resize:none;border:0;outline:0;background-color:transparent;padding:0;margin:0;width:100%;line-height:1.6em}
+    textarea.write::placeholder{color:#9ca3af;font-style:italic}
+    textarea.inline{flex:1;min-height:3.2em;background-image:repeating-linear-gradient(transparent 0 calc(1.6em - 1px),#cbd5e1 calc(1.6em - 1px) 1.6em);background-attachment:local}
+    textarea.overlay{position:absolute;inset:8% 9% 9%;width:auto;font-family:Georgia,'Times New Roman',serif;font-size:calc(var(--ph) * .03);border-radius:6px;transition:background-color .2s}
+    textarea.overlay:focus{background-color:rgba(255,255,255,.55)}
     .num{position:absolute;bottom:3%;left:0;right:0;text-align:center;font-size:12px;color:#9ca3af;font-family:system-ui}
     .loading{color:#9ca3af;font-size:14px}
 
@@ -86,6 +92,7 @@
     <div class="bar">
       <button id="back" class="ghost" title="Zum Bücherregal">←</button>
       <div id="rtitle" class="title"></div>
+      <button id="notes" class="ghost hidden" title="Alles Geschriebene als Textdatei speichern">Notizen ⬇</button>
       <button id="share">Link teilen</button>
     </div>
     <div id="stage">
@@ -174,6 +181,7 @@
       const raw = await r.text();
       const pages = raw.replace(/\r/g, '').split(/^\s*---\s*$/m).map(p => p.trim());
       return {
+        hasWrite: pages.some(p => /^\s*\[schreiben\]\s*$/m.test(p)),
         count: pages.length,
         aspect: 2/3,
         render: async i => {
@@ -181,6 +189,7 @@
           d.innerHTML = pages[i].split(/\n\s*\n/).map(block => {
             block = block.trim();
             if(block.startsWith('# ')) return `<h2>${esc(block.slice(2))}</h2>`;
+            if(block === '[schreiben]') return '<textarea class="write inline" placeholder="Hier schreiben …"></textarea>';
             return `<p>${esc(block).replace(/\n/g, '<br>')}</p>`;
           }).join('');
           return d;
@@ -223,6 +232,7 @@
       $('reader').classList.remove('hidden');
       $('rtitle').textContent = meta.titel || 'Buch';
       $('share').classList.toggle('hidden', !meta.id);
+      $('notes').classList.add('hidden');
       document.title = (meta.titel || 'Buch') + ' – Flipbook';
       $('left').innerHTML = ''; $('right').innerHTML = '<div class="page"><span class="loading">Wird geladen …</span></div>';
       layout(2/3);
@@ -230,12 +240,17 @@
         const src = meta.src || meta.datei;
         const isPdf = meta.src || /\.pdf$/i.test(meta.datei);
         book = Object.assign(await (isPdf ? pdfBook(src) : textBook(src)), {id: meta.id, titel: meta.titel});
+        const sp = meta.schreibseiten;
+        book.writePage = i => sp === 'alle' || (Array.isArray(sp) && sp.includes(i + 1));
+        book.hasWrite = book.hasWrite || !!sp;
+        book.noteId = meta.id || 'lokal:' + meta.titel;
       }catch(e){
         $('right').innerHTML = `<div class="page"><span class="loading">Buch konnte nicht geöffnet werden.<br>${esc(e.message || '')}</span></div>`;
         book = null; return;
       }
       const saved = meta.id ? parseInt(store('flipbook:' + meta.id), 10) : NaN;
       const start = startPage != null ? startPage : (isNaN(saved) ? 0 : saved);
+      $('notes').classList.toggle('hidden', !book.hasWrite);
       layout(book.aspect);
       goTo(start);
     }
@@ -272,10 +287,42 @@
       book.render(i).then(el => {
         box.innerHTML = '';
         box.appendChild(el);
+        if(book.writePage(i)){
+          const ta = document.createElement('textarea');
+          ta.className = 'write overlay'; ta.placeholder = 'Hier schreiben …';
+          box.appendChild(ta);
+        }
+        wireNotes(box, i);
         const n = document.createElement('div'); n.className = 'num'; n.textContent = i + 1;
         box.appendChild(n);
       }).catch(() => { box.innerHTML = '<span class="loading">Seite fehlt</span>'; });
       return box;
+    }
+    // Schreibfelder: werden nur auf dem eigenen Gerät gespeichert
+    function noteKey(i, k){ return `flipbook:notiz:${book.noteId}:${i}:${k}`; }
+    function wireNotes(box, i){
+      box.querySelectorAll('textarea.write').forEach((ta, k) => {
+        const key = noteKey(i, k);
+        ta.value = store(key) || '';
+        ta.addEventListener('input', () => store(key, ta.value));
+        ['click', 'touchstart', 'touchend'].forEach(ev => ta.addEventListener(ev, e => e.stopPropagation()));
+      });
+    }
+    function exportNotes(){
+      const out = [];
+      for(let i = 0; i < book.count; i++){
+        for(let k = 0; k < 10; k++){
+          const v = store(noteKey(i, k));
+          if(v && v.trim()) out.push(`--- Seite ${i + 1} ---\n${v.trim()}\n`);
+        }
+      }
+      if(!out.length){ toast('Noch nichts geschrieben'); return; }
+      const blob = new Blob([`${book.titel || 'Buch'} – meine Notizen\n\n` + out.join('\n')], {type: 'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (book.titel || 'notizen').replace(/[^\wäöüÄÖÜß -]/g, '') + ' - Notizen.txt';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     }
     function fill(slot, i){ $(slot).innerHTML = ''; $(slot).appendChild(pageBox(i)); }
 
@@ -355,6 +402,7 @@
     $('next').onclick = () => flip(1);
     $('prev').onclick = () => flip(-1);
     $('back').onclick = () => { history.pushState(null, '', location.pathname); route(); };
+    $('notes').onclick = () => book && exportNotes();
     $('share').onclick = () => book && book.id && shareLink(bookLink(book.id), book.titel);
 
     $('stage').addEventListener('click', e => {
@@ -370,7 +418,7 @@
       if(Math.abs(dx) > 40){ e.preventDefault(); flip(dx < 0 ? 1 : -1); }
     });
     document.addEventListener('keydown', e => {
-      if($('reader').classList.contains('hidden')) return;
+      if($('reader').classList.contains('hidden') || e.target.tagName === 'TEXTAREA') return;
       if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); flip(1); }
       if(e.key === 'ArrowLeft') { e.preventDefault(); flip(-1); }
       if(e.key === 'Escape') $('back').click();
