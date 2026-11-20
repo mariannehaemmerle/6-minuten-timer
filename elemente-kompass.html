@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elemente-Kompass – Gleichgewicht in Leben &amp; Denken</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            cream: '#FAF7F2',
+            sand: '#F2ECE1',
+            sandDark: '#E6DEC8',
+            ink: '#2C2925',
+            inkSoft: '#5F5950',
+            gold: '#B5945B',
+            goldLight: '#D8C39E',
+            earth: '#7B6F52',
+            water: '#4E6E75',
+            fire: '#B86443',
+            air: '#7A8C89',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #FAF7F2;
+      color: #2C2925;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-editorial {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+    .fade-in {
+      animation: fadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .scale-btn {
+      transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .scale-btn:active {
+      transform: scale(0.95);
+    }
+    /* Dezente Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF7F2;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D8C39E;
+      border-radius: 9999px;
+    }
+    /* Schieberegler im Klangraum */
+    input[type="range"] {
+      accent-color: #B5945B;
+      width: 100%;
+    }
+    /* Atemkreis: langsamer 10-Sekunden-Zyklus (5 s ein, 5 s aus) – bewusst kein Flackern */
+    .breath {
+      animation: breath 10s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+    .breath.is-running {
+      animation-play-state: running;
+    }
+    @keyframes breath {
+      0%, 100% { transform: scale(0.78); opacity: 0.55; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .breath, .fade-in { animation: none !important; }
+    }
+    .segment-text {
+      transition: opacity 0.6s ease;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-gold/20 selection:text-ink">
+
+  <!-- Toast-Benachrichtigung (statt alert) -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 translate-y-2">
+    <div id="toast-inner" class="bg-ink text-cream px-5 py-3 rounded-full shadow-lg text-sm font-medium flex items-center gap-2.5 border border-gold/40">
+      <span class="w-2 h-2 rounded-full bg-gold"></span>
+      <span id="toast-text">Hinweis</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="w-full border-b border-sandDark/80 bg-cream/90 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 sm:px-8 py-4 flex items-center justify-between gap-3">
+      <button onclick="navigateTo('intro')" class="flex items-center gap-3 text-left group focus:outline-none shrink-0" aria-label="Zur Startseite">
+        <div class="w-9 h-9 rounded-full border border-gold/60 bg-sand flex items-center justify-center group-hover:border-gold transition-colors">
+          <!-- Dezentes Kompass-SVG -->
+          <svg class="w-5 h-5 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="9.5" />
+            <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2" stroke-linecap="round" />
+            <polygon points="12,6.5 14.2,12 12,17.5 9.8,12" fill="currentColor" fill-opacity="0.18" />
+          </svg>
+        </div>
+        <div class="hidden md:block leading-tight">
+          <span class="block font-editorial text-xl font-semibold text-ink">Elemente-Kompass</span>
+          <span class="block text-[11px] uppercase tracking-[0.16em] text-inkSoft">Leben &amp; Denken in Balance</span>
+        </div>
+      </button>
+      <nav class="flex items-center gap-1 sm:gap-2.5">
+        <button onclick="openJourneys()" id="nav-journeys-btn" class="nav-btn px-2.5 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium text-inkSoft hover:text-ink hover:bg-sand transition-colors flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-gold hidden sm:inline" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+          </svg>
+          <span class="sm:hidden">Reisen</span><span class="hidden sm:inline">Fantasiereisen</span>
+        </button>
+        <button onclick="navigateTo('library')" id="nav-library-btn" class="nav-btn px-2.5 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium text-inkSoft hover:text-ink hover:bg-sand transition-colors">
+          <span class="sm:hidden">Lexikon</span><span class="hidden sm:inline">Impulse-Lexikon</span>
+        </button>
+        <button onclick="startCheck()" id="nav-start-btn" class="px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-ink text-cream hover:bg-ink/90 transition-colors">
+          <span class="sm:hidden">Check</span><span class="hidden sm:inline">Check starten</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hauptinhalt -->
+  <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
+
+    <!-- ANSICHT 1: START / EINFÜHRUNG -->
+    <section id="view-intro" class="fade-in space-y-10">
+      <div class="bg-sand/70 border border-sandDark rounded-3xl p-7 sm:p-12 relative overflow-hidden">
+        <!-- Dekorative Linien -->
+        <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full border border-gold/25 pointer-events-none"></div>
+        <div class="absolute -right-6 -top-6 w-44 h-44 rounded-full border border-gold/20 pointer-events-none"></div>
+
+        <div class="max-w-2xl space-y-6 relative z-10">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cream border border-gold/40 text-xs tracking-widest uppercase text-gold font-medium">
+            <span>Erde · Wasser · Feuer · Luft</span>
+          </div>
+
+          <h1 class="font-editorial text-4xl sm:text-5xl lg:text-[54px] font-semibold leading-[1.08] text-ink">
+            Welches Element trägt dich – und welches gerät aus dem Lot?
+          </h1>
+
+          <p class="text-base sm:text-lg text-inkSoft leading-relaxed font-light">
+            Die vier Elemente sind ein uraltes Bild für die Kräfte, die uns bewegen. In zwei kurzen Schritten spürst du nach,
+            wie sie sich in deinem <em class="font-editorial text-xl text-ink">gelebten Alltag</em> und in deinem
+            <em class="font-editorial text-xl text-ink">Denken</em> zeigen. Du erhältst eine Auswertung, die sichtbar macht,
+            wo du im Gleichgewicht bist – und konkrete Impulse, Fantasiereisen und binaurale Klänge für einen sanften Ausgleich.
+          </p>
+
+          <div class="pt-2 flex flex-wrap items-center gap-3 sm:gap-4">
+            <button onclick="startCheck()" class="scale-btn px-7 py-3.5 rounded-full bg-ink text-cream font-medium text-sm sm:text-base hover:bg-ink/90 transition-all shadow-sm flex items-center gap-2.5">
+              <span>Check jetzt starten</span>
+              <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+              </svg>
+            </button>
+            <button onclick="openJourneys()" class="scale-btn px-5 py-3.5 rounded-full bg-cream border border-gold/60 text-ink hover:bg-sand text-sm font-medium transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 14v-2a9 9 0 0 1 18 0v2" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 14a2 2 0 0 1 2-2h1v7H5a2 2 0 0 1-2-2v-3Zm18 0a2 2 0 0 0-2-2h-1v7h1a2 2 0 0 0 2-2v-3Z" />
+              </svg>
+              <span>Fantasiereisen &amp; Klangraum</span>
+            </button>
+            <button onclick="loadDemoResult()" class="scale-btn px-5 py-3.5 rounded-full bg-cream border border-sandDark text-inkSoft hover:text-ink hover:border-gold/60 text-sm font-medium transition-colors">
+              Beispiel-Auswertung ansehen
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Übersicht der 4 Elemente -->
+      <div class="space-y-4">
+        <div class="flex items-end justify-between px-1">
+          <div>
+            <span class="text-xs uppercase tracking-[0.18em] text-gold font-medium">Die vier Qualitäten</span>
+            <h2 class="font-editorial text-2xl sm:text-3xl font-semibold text-ink mt-0.5">Spiegel von Alltag &amp; Geist</h2>
+          </div>
+          <span class="text-xs text-inkSoft hidden sm:inline">Dauer: ca. 4 Minuten · 32 Aussagen</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Erde -->
+          <div class="bg-sand/50 border border-sandDark rounded-2xl p-5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-editorial text-2xl font-semibold text-earth">Erde</span>
+              <span class="w-8 h-8 rounded-full bg-earth/10 text-earth flex items-center justify-center">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18h18M5 14l4-5 4 4 6-7"/></svg>
+              </span>
+            </div>
+            <p class="text-xs font-medium uppercase tracking-wider text-inkSoft">Halt &amp; Realismus</p>
+            <p class="text-sm text-inkSoft leading-relaxed">Im Leben Struktur, Körpergefühl und Beständigkeit; im Denken Sachlichkeit und Ruhe.</p>
+          </div>
+
+          <!-- Wasser -->
+          <div class="bg-sand/50 border border-sandDark rounded-2xl p-5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-editorial text-2xl font-semibold text-water">Wasser</span>
+              <span class="w-8 h-8 rounded-full bg-water/10 text-water flex items-center justify-center">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c-4 5.5-6 8.3-6 11a6 6 0 0 0 12 0c0-2.7-2-5.5-6-11z"/></svg>
+              </span>
+            </div>
+            <p class="text-xs font-medium uppercase tracking-wider text-inkSoft">Fluss &amp; Intuition</p>
+            <p class="text-sm text-inkSoft leading-relaxed">Im Leben Empfänglichkeit, Gefühl und Verbundenheit; im Denken Einfühlung und Feinsinn.</p>
+          </div>
+
+          <!-- Feuer -->
+          <div class="bg-sand/50 border border-sandDark rounded-2xl p-5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-editorial text-2xl font-semibold text-fire">Feuer</span>
+              <span class="w-8 h-8 rounded-full bg-fire/10 text-fire flex items-center justify-center">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c2.5 3.5 5 6 5 10a5 5 0 0 1-10 0c0-2.2 1.2-4.3 2.5-6 .2 1.6 1.2 2.5 2.5 2.5-.5-2.3-.5-4.3 0-6.5z"/></svg>
+              </span>
+            </div>
+            <p class="text-xs font-medium uppercase tracking-wider text-inkSoft">Tatkraft &amp; Fokus</p>
+            <p class="text-sm text-inkSoft leading-relaxed">Im Leben Umsetzung, Mut und Lebensenergie; im Denken Klarheit, Wille und Begeisterung.</p>
+          </div>
+
+          <!-- Luft -->
+          <div class="bg-sand/50 border border-sandDark rounded-2xl p-5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-editorial text-2xl font-semibold text-air">Luft</span>
+              <span class="w-8 h-8 rounded-full bg-air/15 text-air flex items-center justify-center">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9h11a3 3 0 1 0-3-3M3 14h14a2.5 2.5 0 1 1-2.5 2.5M6 19h7"/></svg>
+              </span>
+            </div>
+            <p class="text-xs font-medium uppercase tracking-wider text-inkSoft">Weite &amp; Leichtigkeit</p>
+            <p class="text-sm text-inkSoft leading-relaxed">Im Leben Spielraum, Austausch und Beweglichkeit; im Denken Ideen, Überblick und Neugier.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- So funktioniert's -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="border border-sandDark rounded-2xl p-5 space-y-1.5">
+          <span class="font-editorial text-3xl text-gold">1</span>
+          <p class="font-medium text-ink text-sm">Zwei Blickwinkel</p>
+          <p class="text-sm text-inkSoft leading-relaxed">Je 16 Aussagen zu deinem Alltag und zu deinem Denken – jeweils zwischen zwei Polen.</p>
+        </div>
+        <div class="border border-sandDark rounded-2xl p-5 space-y-1.5">
+          <span class="font-editorial text-3xl text-gold">2</span>
+          <p class="font-medium text-ink text-sm">Mitte statt Maximum</p>
+          <p class="text-sm text-inkSoft leading-relaxed">Die Mitte (3) steht für Balance. Beide Pole – Mangel und Übermaß – zeigen, wo Ausgleich guttut.</p>
+        </div>
+        <div class="border border-sandDark rounded-2xl p-5 space-y-1.5">
+          <span class="font-editorial text-3xl text-gold">3</span>
+          <p class="font-medium text-ink text-sm">Impulse &amp; Klang</p>
+          <p class="text-sm text-inkSoft leading-relaxed">Passende Alltagsimpulse, eine empfohlene Fantasiereise und binaurale Klänge zum Nachspüren.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANSICHT 2: FRAGEBOGEN (2 STUFEN) -->
+    <section id="view-quiz" class="hidden fade-in space-y-8">
+      <!-- Schritt-Navigation & Fortschritt -->
+      <div class="bg-sand/70 border border-sandDark rounded-3xl p-6 sm:p-8 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span id="step-badge" class="text-xs uppercase tracking-[0.2em] text-gold font-semibold">Schritt 1 von 2 · Gelebter Alltag</span>
+            <h2 id="step-title" class="font-editorial text-3xl sm:text-4xl font-semibold text-ink mt-1">Im Leben: Alltag, Körper &amp; Handeln</h2>
+          </div>
+
+          <!-- Step Pills -->
+          <div class="flex items-center gap-2 self-start sm:self-center">
+            <button onclick="switchStep(1)" id="pill-step-1" class="px-4 py-2 rounded-full text-xs font-medium transition-colors">
+              1. Im Leben
+            </button>
+            <button onclick="switchStep(2)" id="pill-step-2" class="px-4 py-2 rounded-full text-xs font-medium transition-colors">
+              2. Im Denken
+            </button>
+          </div>
+        </div>
+
+        <p id="step-desc" class="text-sm sm:text-base text-inkSoft max-w-2xl leading-relaxed">
+          Bewerte aus dem Bauch heraus, wie sehr diese Aussagen deinen aktuellen Alltag, dein körperliches Erleben und dein tatsächliches Handeln beschreiben.
+        </p>
+
+        <!-- Fortschrittsbalken -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs text-inkSoft">
+            <span id="progress-label">0 von 16 Aussagen beantwortet</span>
+            <span id="progress-percent">0 %</span>
+          </div>
+          <div class="w-full h-1.5 bg-sandDark rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-gold transition-all duration-300 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fragenliste -->
+      <div id="questions-container" class="space-y-4">
+        <!-- Wird dynamisch gerendert -->
+      </div>
+
+      <!-- Untere Steuerung -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 pb-6">
+        <button id="btn-prev-step" onclick="prevStep()" class="w-full sm:w-auto px-6 py-3 rounded-full border border-sandDark bg-cream text-inkSoft hover:text-ink text-sm font-medium transition-colors">
+          Zurück
+        </button>
+
+        <div class="flex flex-col-reverse sm:flex-row items-center gap-3 w-full sm:w-auto justify-end">
+          <button id="btn-fill-neutral" onclick="fillUnansweredNeutral()" class="px-4 py-3 rounded-full text-xs text-inkSoft hover:text-ink underline underline-offset-4">
+            Offene neutral (3) setzen
+          </button>
+          <button id="btn-next-step" onclick="nextStep()" class="scale-btn w-full sm:w-auto px-7 py-3.5 rounded-full bg-ink text-cream hover:bg-ink/90 text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2">
+            <span id="btn-next-label">Weiter zu „Im Denken“</span>
+            <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANSICHT 3: AUSWERTUNG & IMPULSE -->
+    <section id="view-results" class="hidden fade-in space-y-10">
+      <!-- Kopfbereich Ergebnis -->
+      <div class="bg-sand/70 border border-sandDark rounded-3xl p-6 sm:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-2 max-w-2xl">
+          <span id="result-kicker" class="text-xs uppercase tracking-[0.2em] text-gold font-semibold">Deine persönliche Auswertung</span>
+          <h1 class="font-editorial text-3xl sm:text-5xl font-semibold text-ink leading-tight">
+            Dein innerer Elemente-Kompass
+          </h1>
+          <p id="result-headline-summary" class="text-sm sm:text-base text-inkSoft leading-relaxed">
+            Hier siehst du auf einen Blick, welche Kräfte in deinem Alltag und deinem Denken harmonisch schwingen und wo ein sanfter Ausgleich guttut.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
+          <button onclick="copySummary()" class="px-5 py-3 rounded-full bg-cream border border-gold/50 text-ink hover:bg-sand text-xs sm:text-sm font-medium transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <rect x="9" y="9" width="11" height="11" rx="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            <span>Zusammenfassung kopieren</span>
+          </button>
+          <button onclick="resetCheck()" class="px-5 py-3 rounded-full bg-ink text-cream hover:bg-ink/90 text-xs sm:text-sm font-medium transition-colors">
+            Check neu starten
+          </button>
+        </div>
+      </div>
+
+      <!-- Status-Karten: Im Gleichgewicht / Aus dem Gleichgewicht / Spannungsfeld -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="status-cards-grid">
+        <!-- Dynamisch befüllt -->
+      </div>
+
+      <!-- Visuelle Gegenüberstellung: Radar-Chart + Balkenvergleich -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <!-- SVG Radar-Chart -->
+        <div class="lg:col-span-5 bg-sand/50 border border-sandDark rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <span class="text-xs uppercase tracking-[0.18em] text-gold font-medium">Element-Rad</span>
+            <h2 class="font-editorial text-2xl sm:text-3xl font-semibold text-ink mt-0.5">Leben vs. Denken</h2>
+            <p class="text-xs text-inkSoft mt-1">Die goldene Zone markiert das harmonische Gleichgewicht (2,6 – 3,5).</p>
+          </div>
+
+          <div class="my-4 flex items-center justify-center">
+            <div id="radar-container" class="w-full max-w-[310px] aspect-square"></div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-inkSoft pt-2 border-t border-sandDark/70">
+            <span class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-ink inline-block"></span>
+              Im Leben (Alltag)
+            </span>
+            <span class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full border-2 border-gold bg-gold/25 inline-block"></span>
+              Im Denken (Geist)
+            </span>
+          </div>
+        </div>
+
+        <!-- Detaillierte Balken & Werte je Element -->
+        <div class="lg:col-span-7 bg-sand/50 border border-sandDark rounded-3xl p-6 sm:p-8 flex flex-col justify-between space-y-6">
+          <div>
+            <span class="text-xs uppercase tracking-[0.18em] text-gold font-medium">Feinanalyse</span>
+            <h2 class="font-editorial text-2xl sm:text-3xl font-semibold text-ink mt-0.5">Alle vier Elemente im Detail</h2>
+            <p class="text-xs text-inkSoft mt-1">Skala von 1,0 (deutlicher Mangel) über 3,0 (Mitte / Balance) bis 5,0 (starkes Übermaß).</p>
+          </div>
+
+          <div id="bars-container" class="space-y-5">
+            <!-- Dynamisch befüllt -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Spannungsfeld Leben vs. Denken -->
+      <div id="tension-box" class="bg-cream border border-gold/45 rounded-3xl p-6 sm:p-8 space-y-3">
+        <!-- Dynamisch befüllt -->
+      </div>
+
+      <!-- Konkrete Impulse zum Ausgleich -->
+      <div class="space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 px-1">
+          <div>
+            <span class="text-xs uppercase tracking-[0.18em] text-gold font-medium">Praxis &amp; Integration</span>
+            <h2 class="font-editorial text-3xl sm:text-4xl font-semibold text-ink mt-0.5">Deine Impulse zum Ausgleich</h2>
+            <p class="text-sm text-inkSoft mt-1">Abgestimmt auf deine aktuellen Ungleichgewichte in Leben, Denken und Gesamtbalance.</p>
+          </div>
+
+          <!-- Filter-Tabs für Impulse -->
+          <div class="inline-flex p-1 rounded-full bg-sand border border-sandDark self-start">
+            <button onclick="setImpulseFilter('priority')" id="filter-priority" class="impulse-tab px-4 py-1.5 rounded-full text-xs font-medium transition-colors">Empfohlen</button>
+            <button onclick="setImpulseFilter('leben')" id="filter-leben" class="impulse-tab px-4 py-1.5 rounded-full text-xs font-medium transition-colors">Im Leben</button>
+            <button onclick="setImpulseFilter('denken')" id="filter-denken" class="impulse-tab px-4 py-1.5 rounded-full text-xs font-medium transition-colors">Im Denken</button>
+          </div>
+        </div>
+
+        <div id="impulses-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dynamisch befüllt -->
+        </div>
+      </div>
+
+      <!-- Empfohlene Fantasiereise -->
+      <div id="journey-recommendation" class="bg-ink text-cream rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+        <!-- Dynamisch befüllt -->
+      </div>
+
+      <p class="text-xs text-inkSoft leading-relaxed max-w-3xl px-1">
+        Der Elemente-Kompass ist ein Werkzeug zur Selbstreflexion und keine Diagnose. Er ersetzt keine ärztliche,
+        psychotherapeutische oder psychologische Beratung.
+      </p>
+    </section>
+
+    <!-- ANSICHT 4: IMPULSE-LEXIKON -->
+    <section id="view-library" class="hidden fade-in space-y-8">
+      <div class="bg-sand/70 border border-sandDark rounded-3xl p-6 sm:p-10 space-y-5">
+        <div class="space-y-2 max-w-2xl">
+          <span class="text-xs uppercase tracking-[0.2em] text-gold font-semibold">Impulse-Lexikon</span>
+          <h1 class="font-editorial text-3xl sm:text-5xl font-semibold text-ink leading-tight">Kleine Schritte zurück in die Mitte</h1>
+          <p class="text-sm sm:text-base text-inkSoft leading-relaxed">
+            Alle Impulse auf einen Blick – sortiert nach Element, Ebene und Richtung. Wähle, was dich gerade anspricht.
+            Ein Impuls, regelmäßig gelebt, wirkt mehr als zehn auf einmal.
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex flex-wrap gap-2" id="lib-filter-element"></div>
+          <div class="flex flex-wrap gap-2" id="lib-filter-domain"></div>
+          <div class="flex flex-wrap gap-2" id="lib-filter-state"></div>
+        </div>
+      </div>
+
+      <p id="lib-count" class="text-xs text-inkSoft px-1"></p>
+      <div id="library-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Dynamisch befüllt -->
+      </div>
+    </section>
+
+    <!-- ANSICHT 5: FANTASIEREISEN & KLANGRAUM -->
+    <section id="view-journeys" class="hidden fade-in space-y-10">
+      <div class="bg-sand/70 border border-sandDark rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+        <div class="absolute -right-16 -bottom-20 w-64 h-64 rounded-full border border-gold/25 pointer-events-none"></div>
+        <div class="space-y-3 max-w-2xl relative z-10">
+          <span class="text-xs uppercase tracking-[0.2em] text-gold font-semibold">Fantasiereisen &amp; Klangraum</span>
+          <h1 class="font-editorial text-3xl sm:text-5xl font-semibold text-ink leading-tight">Reise nach innen – getragen von Klang</h1>
+          <p class="text-sm sm:text-base text-inkSoft leading-relaxed">
+            Jede Fantasiereise ist einem Element gewidmet und wird von binauralen Klängen und einer passenden Naturatmosphäre begleitet.
+            Auf Wunsch liest dir die Stimme deines Geräts den Text vor.
+          </p>
+        </div>
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10">
+          <div class="bg-cream/80 border border-sandDark rounded-2xl p-4 flex gap-3 items-start">
+            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 14v-2a9 9 0 0 1 18 0v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 14a2 2 0 0 1 2-2h1v7H5a2 2 0 0 1-2-2v-3Zm18 0a2 2 0 0 0-2-2h-1v7h1a2 2 0 0 0 2-2v-3Z"/></svg>
+            <p class="text-xs text-inkSoft leading-relaxed"><strong class="text-ink font-medium">Mit Kopfhörern hören.</strong> Binaurale Klänge entstehen erst, wenn jedes Ohr seinen eigenen Ton bekommt.</p>
+          </div>
+          <div class="bg-cream/80 border border-sandDark rounded-2xl p-4 flex gap-3 items-start">
+            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H2v6h4l5 4V5Z"/><path stroke-linecap="round" d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+            <p class="text-xs text-inkSoft leading-relaxed"><strong class="text-ink font-medium">Leise beginnen.</strong> Starte mit geringer Lautstärke – der Klang soll tragen, nicht überdecken.</p>
+          </div>
+          <div class="bg-cream/80 border border-sandDark rounded-2xl p-4 flex gap-3 items-start">
+            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+            <p class="text-xs text-inkSoft leading-relaxed"><strong class="text-ink font-medium">Nicht beim Autofahren</strong> oder bei Tätigkeiten, die Aufmerksamkeit brauchen. Bei Epilepsie, Herzschrittmacher oder in der Schwangerschaft vorher ärztlich abklären.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player für Fantasiereisen -->
+      <div id="journey-player" class="hidden bg-ink text-cream rounded-3xl p-6 sm:p-10 space-y-6 relative overflow-hidden scroll-mt-24">
+        <!-- Dynamisch befüllt -->
+      </div>
+
+      <!-- Auswahl der Reisen -->
+      <div class="space-y-4">
+        <div class="px-1">
+          <span class="text-xs uppercase tracking-[0.18em] text-gold font-medium">Vier Reisen</span>
+          <h2 class="font-editorial text-2xl sm:text-3xl font-semibold text-ink mt-0.5">Wähle dein Element</h2>
+        </div>
+        <div id="journey-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Dynamisch befüllt -->
+        </div>
+      </div>
+
+      <!-- Freier Klangraum -->
+      <div class="bg-sand/50 border border-sandDark rounded-3xl p-6 sm:p-8 space-y-7" id="soundroom">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div>
+            <span class="text-xs uppercase tracking-[0.18em] text-gold font-medium">Freier Klangraum</span>
+            <h2 class="font-editorial text-2xl sm:text-3xl font-semibold text-ink mt-0.5">Binaurale Klänge nach deinem Maß</h2>
+            <p class="text-sm text-inkSoft mt-1 max-w-xl">Links und rechts erklingen zwei leicht verschiedene Töne. Dein Gehirn nimmt die Differenz als sanftes Pulsieren wahr – die Schwebungsfrequenz.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-7 space-y-6">
+            <!-- Frequenzbänder -->
+            <div class="space-y-2.5">
+              <p class="text-xs font-medium uppercase tracking-wider text-inkSoft">Frequenzbereich</p>
+              <div id="band-presets" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+            </div>
+
+            <!-- Regler -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <label class="block space-y-1.5">
+                <span class="flex justify-between text-xs text-inkSoft"><span>Schwebung</span><span id="beat-value" class="font-medium text-ink">6,0 Hz</span></span>
+                <input type="range" id="beat-slider" min="1" max="30" step="0.5" value="6" />
+              </label>
+              <label class="block space-y-1.5">
+                <span class="flex justify-between text-xs text-inkSoft"><span>Grundton (Träger)</span><span id="carrier-value" class="font-medium text-ink">200 Hz</span></span>
+                <input type="range" id="carrier-slider" min="80" max="440" step="1" value="200" />
+              </label>
+            </div>
+
+            <!-- Atmosphäre -->
+            <div class="space-y-2.5">
+              <p class="text-xs font-medium uppercase tracking-wider text-inkSoft">Atmosphäre</p>
+              <div id="ambient-presets" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Lautstärken -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <label class="block space-y-1.5">
+                <span class="flex justify-between text-xs text-inkSoft"><span>Lautstärke Klang</span><span id="room-bin-vol-value" class="font-medium text-ink">40 %</span></span>
+                <input type="range" id="room-bin-vol" min="0" max="100" step="1" value="40" />
+              </label>
+              <label class="block space-y-1.5">
+                <span class="flex justify-between text-xs text-inkSoft"><span>Lautstärke Atmosphäre</span><span id="room-amb-vol-value" class="font-medium text-ink">50 %</span></span>
+                <input type="range" id="room-amb-vol" min="0" max="100" step="1" value="50" />
+              </label>
+            </div>
+
+            <!-- Timer -->
+            <div class="space-y-2.5">
+              <p class="text-xs font-medium uppercase tracking-wider text-inkSoft">Dauer</p>
+              <div id="timer-presets" class="flex flex-wrap gap-2"></div>
+            </div>
+          </div>
+
+          <!-- Visualisierung + Start -->
+          <div class="lg:col-span-5 bg-cream border border-sandDark rounded-3xl p-6 flex flex-col items-center justify-between gap-5">
+            <div class="text-center">
+              <p id="room-band-label" class="font-editorial text-2xl font-semibold text-ink">Theta · Meditation</p>
+              <p id="room-freq-label" class="text-xs text-inkSoft mt-1">links 197 Hz · rechts 203 Hz</p>
+            </div>
+            <div class="relative w-44 h-44 flex items-center justify-center">
+              <div class="absolute inset-0 rounded-full border border-gold/30"></div>
+              <div id="room-breath" class="breath w-36 h-36 rounded-full bg-gold/20 border border-gold/60 flex items-center justify-center">
+                <div class="w-16 h-16 rounded-full bg-gold/30"></div>
+              </div>
+              <p class="absolute -bottom-6 text-[11px] text-inkSoft">Atme mit dem Kreis</p>
+            </div>
+            <div class="w-full space-y-3 pt-4">
+              <p id="room-countdown" class="text-center text-sm text-inkSoft tabular-nums">Bereit</p>
+              <button id="room-toggle" onclick="toggleSoundroom()" class="scale-btn w-full px-6 py-3.5 rounded-full bg-ink text-cream hover:bg-ink/90 text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                <span id="room-toggle-label">Klang starten</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <details class="group border-t border-sandDark/80 pt-5">
+          <summary class="cursor-pointer text-sm font-medium text-ink flex items-center gap-2 list-none">
+            <svg class="w-4 h-4 text-gold transition-transform group-open:rotate-90" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
+            Was sind binaurale Klänge?
+          </summary>
+          <div class="mt-3 text-sm text-inkSoft leading-relaxed space-y-2 max-w-3xl">
+            <p>Hört das linke Ohr zum Beispiel 197 Hz und das rechte 203 Hz, entsteht im Gehirn der Eindruck eines dritten, pulsierenden Tons von 6 Hz – die sogenannte binaurale Schwebung. Sie wird gern mit Gehirnwellen-Bereichen in Verbindung gebracht: Delta (tiefe Ruhe), Theta (Meditation, innere Bilder), Alpha (entspannte Wachheit) und Beta (Konzentration).</p>
+            <p>Viele Menschen erleben die Klänge als beruhigend und fokussierend. Die Forschung dazu ist allerdings uneinheitlich – sieh sie als Einladung zum Entspannen, nicht als Heilverfahren.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="w-full border-t border-sandDark/80">
+    <div class="max-w-5xl mx-auto px-4 sm:px-8 py-6 flex flex-col sm:flex-row gap-2 justify-between text-xs text-inkSoft">
+      <span class="font-editorial text-base text-ink">Elemente-Kompass</span>
+      <span>Selbstreflexion – kein Ersatz für medizinische oder therapeutische Beratung.</span>
+    </div>
+  </footer>
+
+  <script>
+  /* ================================================================
+     DATEN: Elemente, Aussagen, Impulse, Fantasiereisen
+     ================================================================ */
+
+  const EL_KEYS = ['erde', 'wasser', 'feuer', 'luft'];
+
+  const ELEMENTS = {
+    erde: {
+      name: 'Erde', color: '#7B6F52', tw: 'earth', quality: 'Halt & Realismus',
+      desc: {
+        leben: {
+          mangel: 'Wenig Halt im Alltag: Rhythmus, Körpergefühl und Struktur kommen zu kurz.',
+          uebermass: 'Viel Festhalten: Routinen und Kontrolle werden schwer und starr.',
+          balance: 'Gut geerdet: Struktur gibt dir Halt, ohne einzuengen.'
+        },
+        denken: {
+          mangel: 'Gedanken springen – der rote Faden und der Realitätsbezug fehlen.',
+          uebermass: 'Das Denken ist festgefahren und stark auf Sicherheit und Risiken ausgerichtet.',
+          balance: 'Sachlich und ruhig – mit gesundem Realitätssinn.'
+        }
+      }
+    },
+    wasser: {
+      name: 'Wasser', color: '#4E6E75', tw: 'water', quality: 'Fluss & Intuition',
+      desc: {
+        leben: {
+          mangel: 'Gefühle, Genuss und Nähe kommen im Alltag zu kurz.',
+          uebermass: 'Gefühle und Beziehungen überfluten dich, eigene Grenzen verschwimmen.',
+          balance: 'Im Fluss: Gefühle dürfen da sein und tragen dich.'
+        },
+        denken: {
+          mangel: 'Intuition und Einfühlung sind wenig zugänglich – der Kopf dominiert.',
+          uebermass: 'Grübeln, Mitfühlen und Erinnerungen ziehen viel Kraft.',
+          balance: 'Feinsinnig und einfühlsam, ohne darin zu versinken.'
+        }
+      }
+    },
+    feuer: {
+      name: 'Feuer', color: '#B86443', tw: 'fire', quality: 'Tatkraft & Fokus',
+      desc: {
+        leben: {
+          mangel: 'Energie und Umsetzungskraft sind niedrig, vieles bleibt liegen.',
+          uebermass: 'Hochtouren und Getriebensein – Erschöpfung droht.',
+          balance: 'Kraftvoll und mutig, mit gesunder Dosierung.'
+        },
+        denken: {
+          mangel: 'Fokus, Wille und Begeisterung fehlen, Zweifel überwiegen.',
+          uebermass: 'Verbissenheit und ein innerer Antreiber lassen wenig Ruhe.',
+          balance: 'Klar, fokussiert und begeisterungsfähig.'
+        }
+      }
+    },
+    luft: {
+      name: 'Luft', color: '#7A8C89', tw: 'air', quality: 'Weite & Leichtigkeit',
+      desc: {
+        leben: {
+          mangel: 'Wenig Freiraum, Austausch und Atem – der Alltag wirkt eng.',
+          uebermass: 'Unruhe, Dauerkontakt und Sprunghaftigkeit zerstreuen dich.',
+          balance: 'Beweglich und offen, mit genug Raum zum Atmen.'
+        },
+        denken: {
+          mangel: 'Neugier und Überblick fehlen, Gedanken wirken eng und schwer.',
+          uebermass: 'Gedankenkarussell: viele Ideen, wenig Boden.',
+          balance: 'Neugierig, weitblickend und gedanklich leicht.'
+        }
+      }
+    }
+  };
+
+  // Ausgleichendes Gegen-Element (für Übermaß)
+  const COMPLEMENT = { feuer: 'wasser', wasser: 'feuer', erde: 'luft', luft: 'erde' };
+
+  // Bipolare Aussagen: 1 = Mangel-Pol, 3 = Mitte, 5 = Übermaß-Pol
+  const RAW_QUESTIONS = {
+    leben: {
+      erde: [
+        ['Mein Tagesrhythmus – Schlaf, Essen, Arbeit – ist …', 'unregelmäßig, ohne festen Halt', 'starr, Abweichungen stressen mich'],
+        ['Meinen Körper spüre ich im Alltag …', 'kaum, ich bin oft „nicht ganz da“', 'schwer und träge, ich komme kaum in Gang'],
+        ['Mit Ordnung, Finanzen und Pflichten gehe ich um …', 'chaotisch, vieles bleibt liegen', 'kontrollierend, ich kann schwer loslassen'],
+        ['Veränderungen in meinem Umfeld …', 'werfen mich schnell aus der Bahn', 'vermeide ich, ich halte am Gewohnten fest']
+      ],
+      wasser: [
+        ['Gefühle zeige ich im Alltag …', 'kaum, ich wirke eher kühl', 'sehr stark, sie überfluten mich oft'],
+        ['Nähe und Beziehungen …', 'halte ich lieber auf Abstand', 'brauche ich so sehr, dass ich mich verliere'],
+        ['Genuss, Ruhe und Erholung …', 'kommen deutlich zu kurz', 'werden zur Flucht vor Anforderungen'],
+        ['Mit dem Fluss der Dinge zu gehen …', 'fällt mir schwer, ich bin innerlich steif', 'gelingt so sehr, dass ich mich treiben lasse']
+      ],
+      feuer: [
+        ['Meine Energie über den Tag ist …', 'meist niedrig, ich bin schnell erschöpft', 'dauernd auf Hochtouren, ich komme kaum runter'],
+        ['Vorhaben setze ich um …', 'selten, vieles bleibt Idee', 'getrieben, oft zu viel gleichzeitig'],
+        ['Für meine Bedürfnisse einzustehen …', 'fällt mir schwer, ich weiche Konflikten aus', 'tue ich oft heftig und ungeduldig'],
+        ['Bewegung und Sport …', 'kommen kaum vor', 'betreibe ich bis über meine Grenzen']
+      ],
+      luft: [
+        ['Freiräume und Abwechslung …', 'fehlen mir, mein Alltag ist eng', 'brauche ich ständig, Routine langweilt mich'],
+        ['Austausch mit anderen …', 'findet kaum statt, ich ziehe mich zurück', 'ist pausenlos – Nachrichten, Termine, Gespräche'],
+        ['Mein Atem im Alltag ist …', 'flach und eng, ich halte ihn oft an', 'hastig, ich bin innerlich flatterig'],
+        ['Pläne und Termine …', 'sind so festgezurrt, dass kein Spielraum bleibt', 'wechseln ständig, ich bin überall und nirgends']
+      ]
+    },
+    denken: {
+      erde: [
+        ['Mein Denken ist …', 'sprunghaft, mir fehlt der rote Faden', 'festgefahren in bekannten Mustern'],
+        ['Bei Entscheidungen …', 'fehlt mir oft der Realitätscheck', 'sehe ich vor allem Risiken und Hindernisse'],
+        ['Beim Nachdenken bin ich innerlich …', 'unruhig, die Gedanken rasen', 'schwer, ich werde gedanklich träge'],
+        ['Neue Ideen prüfe ich …', 'kaum, ich lasse mich mitreißen', 'so streng, dass sie selten eine Chance bekommen']
+      ],
+      wasser: [
+        ['Meine Intuition …', 'höre ich kaum, ich zähle nur Fakten', 'überstimmt meist jede Vernunft'],
+        ['Mich in andere hineinzuversetzen …', 'fällt mir schwer', 'gelingt so sehr, dass ich fremde Gefühle mittrage'],
+        ['Vergangenes und Erinnerungen …', 'blende ich lieber aus', 'beschäftigen mich lange, ich grüble viel'],
+        ['Meine innere Bilderwelt ist …', 'blass und wenig zugänglich', 'so stark, dass ich mich darin verliere']
+      ],
+      feuer: [
+        ['Meine Gedanken haben Richtung …', 'selten, mir fehlen Fokus und Ziel', 'so verbissen, dass ich nichts anderes sehe'],
+        ['Begeisterung für Ideen …', 'spüre ich kaum noch', 'lodert schnell auf und brennt mich aus'],
+        ['Meine innere Stimme ist …', 'zögerlich und voller Zweifel', 'kritisch und antreibend, selten zufrieden'],
+        ['Mit Willenskraft …', 'komme ich kaum über innere Widerstände', 'zwinge ich mich oft gegen meine Bedürfnisse']
+      ],
+      luft: [
+        ['Neugier auf Neues …', 'ist kaum da, ich bleibe beim Bekannten', 'springt von Thema zu Thema, nichts wird vertieft'],
+        ['Den Überblick zu behalten …', 'fällt mir schwer, ich stecke in Details', 'gelingt so abstrakt, dass ich den Boden verliere'],
+        ['Mein Kopf fühlt sich an …', 'eng und schwer, wenig Leichtigkeit', 'voll und laut, Gedanken kreisen pausenlos'],
+        ['Perspektiven zu wechseln …', 'gelingt mir selten', 'tue ich so oft, dass ich keinen Standpunkt finde']
+      ]
+    }
+  };
+
+  // Fragen verschränken (Elemente gemischt, damit die Antworten unvoreingenommen bleiben)
+  const QUESTIONS = { leben: [], denken: [] };
+  ['leben', 'denken'].forEach(dom => {
+    for (let n = 0; n < 4; n++) {
+      const order = EL_KEYS.map((_, i) => EL_KEYS[(i + n) % 4]);
+      order.forEach(el => {
+        const [text, low, high] = RAW_QUESTIONS[dom][el][n];
+        QUESTIONS[dom].push({ id: `${dom[0]}-${el}-${n + 1}`, el, dom, text, low, high });
+      });
+    }
+  });
+
+  // Impulse: el × Ebene (leben/denken/beide) × Richtung (mangel/uebermass/balance)
+  const IMPULSES = [
+    // ERDE
+    { el: 'erde', dom: 'leben', state: 'mangel', title: 'Feste Ankerpunkte', dur: '7 Tage', text: 'Lege drei feste Tageszeiten fest – etwa Aufstehen, Mittagessen und Schlafengehen – und halte sie eine Woche lang ein.' },
+    { el: 'erde', dom: 'leben', state: 'mangel', title: 'Barfuß-Minute', dur: '1 Min.', text: 'Stelle dich morgens eine Minute barfuß auf den Boden, die Knie leicht gebeugt. Spüre bewusst Fersen, Ballen und Zehen.' },
+    { el: 'erde', dom: 'leben', state: 'uebermass', title: 'Kleine Abweichung', dur: 'täglich', text: 'Ändere einmal am Tag bewusst eine Gewohnheit: ein anderer Weg, ein anderes Frühstück, ein anderer Platz. Beobachte, was passiert.' },
+    { el: 'erde', dom: 'leben', state: 'uebermass', title: 'Schütteln statt Festhalten', dur: '2 Min.', text: 'Schüttle zwei Minuten lang Arme, Beine und Schultern locker aus – am besten zu Musik. Das löst Schwere und Starre.' },
+    { el: 'erde', dom: 'denken', state: 'mangel', title: 'Ein Satz, ein Ziel', dur: '2 Min.', text: 'Schreibe vor einer Aufgabe in einem Satz auf, worum es geht und was am Ende fertig sein soll. Kehre zu diesem Satz zurück, wenn du abschweifst.' },
+    { el: 'erde', dom: 'denken', state: 'mangel', title: 'Realitäts-Check', dur: '5 Min.', text: 'Prüfe eine Idee mit drei Fragen: Was brauche ich dafür? Bis wann? Was ist der erste konkrete Schritt?' },
+    { el: 'erde', dom: 'denken', state: 'uebermass', title: 'Was wäre, wenn …?', dur: '10 Min.', text: 'Nimm ein festgefahrenes Thema und spiele drei verrückte Lösungen durch. Nicht umsetzen – nur denken. Das lockert alte Muster.' },
+    { el: 'erde', dom: 'denken', state: 'uebermass', title: 'Chancen-Spalte', dur: '10 Min.', text: 'Schreibe zu einer Entscheidung nicht nur die Risiken, sondern genauso viele Chancen auf. Erst dann entscheide.' },
+    { el: 'erde', dom: 'beide', state: 'balance', title: 'Was trägt mich?', dur: '2 Min.', text: 'Würdige, was dir Halt gibt. Notiere einen Satz: Was trägt mich gerade – und wie pflege ich es weiter?' },
+    // WASSER
+    { el: 'wasser', dom: 'leben', state: 'mangel', title: 'Gefühls-Check-in', dur: '3× täglich', text: 'Halte dreimal am Tag inne und frage: Was fühle ich gerade – und wo im Körper spüre ich es? Ein Wort genügt.' },
+    { el: 'wasser', dom: 'leben', state: 'mangel', title: 'Warmes Wasser', dur: '20 Min.', text: 'Gönne dir bewusst ein warmes Bad, eine lange Dusche oder ein Fußbad – ohne Handy, nur mit Wahrnehmung.' },
+    { el: 'wasser', dom: 'leben', state: 'uebermass', title: 'Gefühle bekommen einen Ort', dur: '5 Min.', text: 'Schreibe starke Gefühle fünf Minuten lang ungefiltert auf und schließe das Heft dann bewusst. Das Gefühl darf dort bleiben.' },
+    { el: 'wasser', dom: 'leben', state: 'uebermass', title: 'Eigene Ufer', dur: '1 Woche', text: 'Formuliere einen klaren Satz, mit dem du Grenzen setzt, z. B. „Das schaue ich mir morgen an.“ Nutze ihn diese Woche mindestens einmal.' },
+    { el: 'wasser', dom: 'denken', state: 'mangel', title: 'Münzwurf-Methode', dur: '1 Min.', text: 'Wirf bei einer kleinen Entscheidung gedanklich eine Münze. Spüre im Moment des Wurfs, welche Seite du dir erhoffst – das ist deine Intuition.' },
+    { el: 'wasser', dom: 'denken', state: 'mangel', title: 'Innere Bilder', dur: '10 Min.', text: 'Male oder kritzle zehn Minuten frei – ohne Ziel und ohne Bewertung. Bilder öffnen den Zugang zum inneren Wissen.' },
+    { el: 'wasser', dom: 'denken', state: 'uebermass', title: 'Grübel-Fenster', dur: '15 Min.', text: 'Gib dem Grübeln ein festes Zeitfenster von 15 Minuten am Nachmittag. Taucht es vorher auf, notiere den Gedanken und verschiebe ihn dorthin.' },
+    { el: 'wasser', dom: 'denken', state: 'uebermass', title: 'Ist das meins?', dur: '3 Min.', text: 'Frage dich bei einem schweren Gefühl: Gehört das zu mir – oder trage ich es für jemand anderen? Gib Fremdes innerlich zurück.' },
+    { el: 'wasser', dom: 'beide', state: 'balance', title: 'Verbindung nähren', dur: '5 Min.', text: 'Schreibe einem Menschen, der dir guttut, eine kurze Nachricht – einfach so, ohne Anlass.' },
+    // FEUER
+    { el: 'feuer', dom: 'leben', state: 'mangel', title: 'Fünf-Minuten-Start', dur: '5 Min.', text: 'Beginne eine aufgeschobene Aufgabe für nur fünf Minuten. Danach darfst du aufhören – meistens machst du weiter.' },
+    { el: 'feuer', dom: 'leben', state: 'mangel', title: 'Morgen-Aktivierung', dur: '10 Min.', text: 'Starte den Tag mit 20 Kniebeugen oder einem flotten Spaziergang im Tageslicht. Bewegung entfacht die innere Glut.' },
+    { el: 'feuer', dom: 'leben', state: 'uebermass', title: 'Drei Dinge am Tag', dur: 'täglich', text: 'Wähle für heute drei Aufgaben – nicht mehr. Alles andere wandert auf eine Liste für morgen.' },
+    { el: 'feuer', dom: 'leben', state: 'uebermass', title: 'Abkühlender Atem', dur: '3 Min.', text: 'Atme zehnmal so, dass das Ausatmen doppelt so lang ist wie das Einatmen (4 Sekunden ein, 8 aus). Das beruhigt das Nervensystem.' },
+    { el: 'feuer', dom: 'denken', state: 'mangel', title: 'Wofür brenne ich?', dur: '10 Min.', text: 'Notiere drei Momente, in denen du dich zuletzt lebendig und begeistert gefühlt hast. Was haben sie gemeinsam?' },
+    { el: 'feuer', dom: 'denken', state: 'mangel', title: 'Ermutigender Satz', dur: '1 Min.', text: 'Schreibe dir einen Satz auf, der dich stärkt – so, wie ihn ein guter Freund sagen würde – und lies ihn morgens laut.' },
+    { el: 'feuer', dom: 'denken', state: 'uebermass', title: 'Gut genug', dur: '1 Tag', text: 'Beende heute eine Aufgabe bewusst bei 80 %. Beobachte, ob wirklich etwas Schlimmes passiert.' },
+    { el: 'feuer', dom: 'denken', state: 'uebermass', title: 'Den Antreiber erkennen', dur: '2 Min.', text: 'Wenn die innere Stimme drängt, frage: Wessen Stimme ist das eigentlich? Antworte ihr freundlich, aber bestimmt.' },
+    { el: 'feuer', dom: 'beide', state: 'balance', title: 'Glut pflegen', dur: '3 Min.', text: 'Feiere einen kleinen Erfolg dieser Woche bewusst – erzähle davon oder schreibe ihn auf.' },
+    // LUFT
+    { el: 'luft', dom: 'leben', state: 'mangel', title: 'Weiter Atem', dur: '2 Min.', text: 'Atme dreimal tief in die Flanken, bis sich die Rippen spürbar weiten – am besten am offenen Fenster.' },
+    { el: 'luft', dom: 'leben', state: 'mangel', title: 'Neuer Impuls', dur: '1 Woche', text: 'Plane diese Woche eine kleine Neuheit: ein unbekanntes Café, ein Gespräch mit jemand Neuem, ein anderer Heimweg.' },
+    { el: 'luft', dom: 'leben', state: 'uebermass', title: 'Digitale Stille', dur: '60 Min.', text: 'Lege dein Handy abends für eine Stunde in einen anderen Raum. Bemerke, wie sich die innere Unruhe verändert.' },
+    { el: 'luft', dom: 'leben', state: 'uebermass', title: 'Langsam gehen', dur: '5 Min.', text: 'Gehe fünf Minuten so langsam, dass du jeden Schritt spürst: Ferse, Ballen, Zehen. Das holt dich zurück in den Körper.' },
+    { el: 'luft', dom: 'denken', state: 'mangel', title: 'Vogelperspektive', dur: '5 Min.', text: 'Beschreibe ein aktuelles Problem so, als würdest du es in fünf Jahren jemandem erzählen. Was ist dann noch wichtig?' },
+    { el: 'luft', dom: 'denken', state: 'mangel', title: 'Neugier-Frage', dur: '10 Min.', text: 'Stelle dir heute eine Frage, deren Antwort du nicht kennst – und geh ihr zehn Minuten lang nach.' },
+    { el: 'luft', dom: 'denken', state: 'uebermass', title: 'Gedanken parken', dur: '5 Min.', text: 'Schreibe vor dem Schlafen alle offenen Gedanken auf einen Zettel. Was aufgeschrieben ist, muss der Kopf nicht mehr festhalten.' },
+    { el: 'luft', dom: 'denken', state: 'uebermass', title: 'Ein Thema vertiefen', dur: '25 Min.', text: 'Wähle eine Idee aus und bleib 25 Minuten nur bei ihr – ohne Wechsel, ohne Tabs, ohne Nachrichten.' },
+    { el: 'luft', dom: 'beide', state: 'balance', title: 'Raum halten', dur: '10 Min.', text: 'Gönn dir täglich zehn Minuten ohne Input – einfach aus dem Fenster schauen und den Gedanken nachsehen.' }
+  ];
+
+  // Fantasiereisen mit binauralem Preset und Atmosphäre
+  const JOURNEYS = {
+    erde: {
+      title: 'Der alte Baum', subtitle: 'Verwurzeln & Halt finden',
+      band: 'Theta', beat: 4, carrier: 136.1, ambient: 'erde',
+      intro: 'Für mehr Halt, Ruhe und Körpergefühl – wenn du dich zerstreut oder ungeerdet fühlst.',
+      segments: [
+        ['Mach es dir bequem. Lass deinen Körper schwer werden, dort, wo er aufliegt. Spüre den Boden, der dich trägt – ganz ohne dein Zutun.', 8],
+        ['Atme tief in den Bauch. Mit jedem Ausatmen sinkst du ein wenig mehr in die Unterlage. Ein … und aus.', 12],
+        ['Vor deinem inneren Auge entsteht ein Weg. Er führt über weiche Erde, bedeckt mit Moos und Laub. Du gehst langsam, Schritt für Schritt.', 10],
+        ['Am Ende des Weges steht ein alter, mächtiger Baum. Seine Rinde ist rau und warm. Lege deine Hände darauf und spüre, wie viele Jahre er schon hier steht.', 12],
+        ['Setze dich an seinen Stamm. Stell dir vor, aus deinen Füßen und deinem Becken wachsen Wurzeln – tief hinein in die kühle, dunkle Erde.', 14],
+        ['Die Wurzeln finden Halt. Sie verbinden sich mit den Wurzeln des Baumes. Was dich beunruhigt, darf durch sie in die Erde abfließen. Die Erde nimmt es auf, ohne zu urteilen.', 16],
+        ['Mit jedem Einatmen steigt Ruhe aus der Tiefe zu dir herauf. Kraft, die nicht drängt. Beständigkeit, die einfach da ist.', 16],
+        ['Du musst nichts leisten. Du bist getragen. Genau hier, genau jetzt.', 20],
+        ['Langsam kehrst du zurück. Die Wurzeln bleiben – als Gefühl in deinen Füßen. Bewege Finger und Zehen. Atme tief ein und öffne, wenn du so weit bist, die Augen.', 8]
+      ]
+    },
+    wasser: {
+      title: 'Am stillen See', subtitle: 'Fließen & Fühlen',
+      band: 'Theta', beat: 6, carrier: 210.4, ambient: 'wasser',
+      intro: 'Für Weichheit, Gefühl und Verbundenheit – oder um ein überhitztes Feuer zu kühlen.',
+      segments: [
+        ['Schließe die Augen und lass deinen Atem fließen, wie er von selbst fließen möchte. Nichts musst du verändern.', 8],
+        ['Du stehst am Ufer eines stillen Sees. Die Luft ist mild, die Oberfläche des Wassers glatt wie ein Spiegel.', 10],
+        ['Du gehst ein paar Schritte hinein. Das Wasser ist angenehm warm und umspült deine Füße, deine Knöchel, deine Beine.', 12],
+        ['Lass dich sanft nach hinten sinken. Das Wasser trägt dich. Du liegst ganz leicht auf der Oberfläche und spürst die kleinen Wellen unter dir.', 14],
+        ['Jede Welle nimmt etwas mit: Anspannung aus den Schultern, Enge aus der Brust, Schwere aus dem Herzen. Alles darf fließen.', 16],
+        ['Wenn Gefühle auftauchen, begrüße sie wie Wellen. Sie kommen, sie heben dich ein wenig an – und sie ziehen weiter.', 16],
+        ['Unter dir liegt die Tiefe des Sees, ruhig und klar. Auch in dir gibt es diesen ruhigen Grund, ganz gleich, wie bewegt die Oberfläche ist.', 16],
+        ['Bleib noch einen Moment in dieser Weichheit. Getragen. Verbunden. Im Fluss.', 20],
+        ['Langsam treibst du zurück ans Ufer. Du stehst auf, das Wasser perlt von dir ab, und die Ruhe bleibt. Atme tief ein, bewege dich sanft und öffne die Augen.', 8]
+      ]
+    },
+    feuer: {
+      title: 'Das Herdfeuer', subtitle: 'Entfachen & Ausrichten',
+      band: 'Alpha–Beta', beat: 12, carrier: 126.2, ambient: 'feuer',
+      intro: 'Für Energie, Mut und Klarheit – oder um zu viel Wasser wieder in Bewegung zu bringen.',
+      segments: [
+        ['Setze oder lege dich aufrecht und wach hin. Atme kräftig durch die Nase ein – und lass den Atem durch den Mund hinausströmen.', 8],
+        ['Es ist Abend. Vor dir brennt ein Feuer in einer alten Feuerstelle. Du hörst das Knistern des Holzes und spürst die Wärme auf deinem Gesicht.', 12],
+        ['Schau in die Flammen. Sie tanzen, sie wechseln die Farbe – von tiefem Rot zu leuchtendem Gold.', 12],
+        ['Mit jedem Einatmen nimmst du etwas von dieser Wärme in dich auf. Sie sammelt sich in deinem Bauch, knapp oberhalb des Nabels, als kleine, ruhige Glut.', 14],
+        ['Spüre, wie diese Glut stärker wird. Sie ist nicht hektisch. Sie ist klar und beständig – deine eigene Lebenskraft.', 14],
+        ['Denke an etwas, das du umsetzen möchtest. Sieh es im Licht des Feuers. Was ist der erste, kleine Schritt, den du gehen kannst?', 18],
+        ['Lass das Feuer verwandeln, was dich zögern lässt: alte Zweifel, fremde Erwartungen. Sie werden zu Asche und Licht.', 16],
+        ['Die Glut bleibt in dir. Warm. Wach. Bereit.', 16],
+        ['Atme dreimal kräftig ein und aus. Strecke dich, balle die Hände zu Fäusten und öffne sie wieder. Öffne die Augen – voller Energie für das, was jetzt kommt.', 6]
+      ]
+    },
+    luft: {
+      title: 'Auf dem Berggipfel', subtitle: 'Weite & Leichtigkeit',
+      band: 'Alpha', beat: 10, carrier: 172.1, ambient: 'luft',
+      intro: 'Für Weite, Überblick und Leichtigkeit – oder um zu viel Erde wieder beweglich werden zu lassen.',
+      segments: [
+        ['Komm an. Lass deinen Atem weit werden – erst in den Bauch, dann in die Flanken, dann bis unter die Schlüsselbeine.', 10],
+        ['Du stehst auf dem Gipfel eines Berges. Unter dir ziehen Wolken vorbei, über dir wölbt sich ein weiter, klarer Himmel.', 12],
+        ['Ein frischer Wind streicht über dein Gesicht und durch dein Haar. Mit jedem Atemzug strömt klare, kühle Luft in dich hinein.', 12],
+        ['Mit dem Ausatmen nimmt der Wind alles mit, was eng ist. Gedanken, die kreisen, dürfen wie Wolken weiterziehen.', 16],
+        ['Schau hinab ins Tal. Von hier oben wirkt vieles kleiner. Du siehst die Wege, die Zusammenhänge, das große Ganze.', 14],
+        ['Vielleicht gleitet ein Vogel an dir vorbei. Er kämpft nicht gegen den Wind – er lässt sich tragen und nutzt ihn.', 14],
+        ['Spüre die Weite in dir. In deinem Kopf ist Raum. Zwischen zwei Gedanken liegt eine kleine, stille Lücke.', 18],
+        ['Atme diese Leichtigkeit. Klar. Frei. Offen.', 18],
+        ['Der Wind trägt dich sanft zurück. Spüre wieder deinen Körper, sein Gewicht, den Boden. Atme tief ein, strecke dich und öffne die Augen.', 8]
+      ]
+    }
+  };
+
+  const BANDS = [
+    { key: 'delta', name: 'Delta', label: 'Tiefe Ruhe', beat: 2, carrier: 136.1 },
+    { key: 'theta', name: 'Theta', label: 'Meditation', beat: 6, carrier: 200 },
+    { key: 'alpha', name: 'Alpha', label: 'Entspannte Wachheit', beat: 10, carrier: 172.1 },
+    { key: 'beta', name: 'Beta', label: 'Fokus', beat: 15, carrier: 220 }
+  ];
+
+  const AMBIENTS = [
+    { key: 'none', label: 'Nur Klang' },
+    { key: 'erde', label: 'Erde · tiefes Rauschen' },
+    { key: 'wasser', label: 'Wasser · Wellen' },
+    { key: 'feuer', label: 'Feuer · Knistern' },
+    { key: 'luft', label: 'Luft · Wind' }
+  ];
+
+  const TIMERS = [
+    { min: 10, label: '10 Min.' }, { min: 20, label: '20 Min.' }, { min: 30, label: '30 Min.' }, { min: 0, label: 'Ohne Ende' }
+  ];
+
+  // Demo-Profil: Werte je Element/Ebene in Fragereihenfolge 1–4
+  const DEMO = {
+    erde:   { leben: [3, 2, 3, 3], denken: [3, 3, 2, 3] },
+    wasser: { leben: [2, 3, 2, 3], denken: [4, 5, 4, 3] },
+    feuer:  { leben: [5, 4, 4, 4], denken: [3, 4, 3, 3] },
+    luft:   { leben: [3, 4, 3, 3], denken: [5, 4, 5, 4] }
+  };
+
+  /* ================================================================
+     HILFSFUNKTIONEN
+     ================================================================ */
+
+  const $ = id => document.getElementById(id);
+  const fmt = v => v.toFixed(1).replace('.', ',');
+  const DOM_LABEL = { leben: 'Im Leben', denken: 'Im Denken', beide: 'Leben & Denken' };
+  const DOM_INLINE = { leben: 'im Leben', denken: 'im Denken', beide: 'in Leben & Denken' };
+  const lcFirst = s => s.charAt(0).toLowerCase() + s.slice(1);
+  const STATE_LABEL = { mangel: 'Mangel', uebermass: 'Übermaß', balance: 'Im Gleichgewicht' };
+
+  function stateOf(v) {
+    if (v < 2.6) return 'mangel';
+    if (v > 3.5) return 'uebermass';
+    return 'balance';
+  }
+  function stateText(v) {
+    const s = stateOf(v);
+    if (s === 'balance') return 'Im Gleichgewicht';
+    const strong = Math.abs(v - 3) >= 1;
+    if (s === 'mangel') return strong ? 'Deutlicher Mangel' : 'Leichter Mangel';
+    return strong ? 'Starkes Übermaß' : 'Leichtes Übermaß';
+  }
+  function stateBadge(v) {
+    const s = stateOf(v);
+    const cls = s === 'balance'
+      ? 'bg-gold/15 text-gold border-gold/40'
+      : 'bg-fire/10 text-fire border-fire/30';
+    return `<span class="inline-flex items-center px-2.5 py-1 rounded-full border text-[11px] font-medium ${cls}">${stateText(v)}</span>`;
+  }
+
+  let toastTimer = null;
+  function showToast(text) {
+    const t = $('toast');
+    $('toast-text').textContent = text;
+    t.classList.remove('opacity-0', 'translate-y-2');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.add('opacity-0', 'translate-y-2'), 2800);
+  }
+
+  const STORAGE_KEY = 'elementeKompass.v1';
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, isDemo })); } catch (e) { /* Speicher nicht verfügbar */ }
+  }
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (data && data.answers && !data.isDemo) answers = data.answers;
+    } catch (e) { /* ignorieren */ }
+  }
+
+  /* ================================================================
+     NAVIGATION
+     ================================================================ */
+
+  const VIEWS = ['intro', 'quiz', 'results', 'library', 'journeys'];
+  let currentView = 'intro';
+
+  function navigateTo(view) {
+    VIEWS.forEach(v => $('view-' + v).classList.toggle('hidden', v !== view));
+    currentView = view;
+    const el = $('view-' + view);
+    el.classList.remove('fade-in'); void el.offsetWidth; el.classList.add('fade-in');
+    $('nav-journeys-btn').classList.toggle('bg-sand', view === 'journeys');
+    $('nav-journeys-btn').classList.toggle('text-ink', view === 'journeys');
+    $('nav-library-btn').classList.toggle('bg-sand', view === 'library');
+    $('nav-library-btn').classList.toggle('text-ink', view === 'library');
+    if (view === 'library') renderLibrary();
+    if (view === 'journeys') renderJourneyCards();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ================================================================
+     FRAGEBOGEN
+     ================================================================ */
+
+  let answers = {};
+  let currentStep = 1;
+  let isDemo = false;
+  let impulseFilter = 'priority';
+
+  const STEP_META = {
+    1: {
+      badge: 'Schritt 1 von 2 · Gelebter Alltag',
+      title: 'Im Leben: Alltag, Körper &amp; Handeln',
+      desc: 'Bewerte aus dem Bauch heraus, wie sehr diese Aussagen deinen aktuellen Alltag, dein körperliches Erleben und dein tatsächliches Handeln beschreiben. Die Mitte steht für „ausgewogen“.',
+      next: 'Weiter zu „Im Denken“'
+    },
+    2: {
+      badge: 'Schritt 2 von 2 · Innere Welt',
+      title: 'Im Denken: Gedanken, Haltung &amp; Geist',
+      desc: 'Nun geht es um deine innere Welt: wie du denkst, entscheidest, fühlst und dir Dinge vorstellst. Antworte so, wie es in den letzten Wochen meistens war.',
+      next: 'Auswertung ansehen'
+    }
+  };
+
+  function startCheck() {
+    isDemo = false;
+    currentStep = 1;
+    renderQuiz();
+    navigateTo('quiz');
+  }
+
+  function stepDom() { return currentStep === 1 ? 'leben' : 'denken'; }
+
+  function renderQuiz() {
+    const meta = STEP_META[currentStep];
+    $('step-badge').textContent = meta.badge;
+    $('step-title').innerHTML = meta.title;
+    $('step-desc').textContent = meta.desc;
+    $('btn-next-label').textContent = meta.next;
+    [1, 2].forEach(n => {
+      const pill = $('pill-step-' + n);
+      pill.className = 'px-4 py-2 rounded-full text-xs font-medium transition-colors ' +
+        (n === currentStep ? 'bg-ink text-cream' : 'bg-cream border border-sandDark text-inkSoft hover:text-ink');
+    });
+    renderQuestions();
+  }
+
+  function renderQuestions(highlightOpen = false) {
+    const qs = QUESTIONS[stepDom()];
+    $('questions-container').innerHTML = qs.map((q, i) => {
+      const val = answers[q.id];
+      const open = highlightOpen && !val;
+      const btns = [1, 2, 3, 4, 5].map(v => {
+        const active = val === v;
+        const base = 'scale-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border text-sm font-medium flex items-center justify-center transition-colors';
+        const cls = active
+          ? 'bg-ink border-ink text-cream'
+          : (v === 3 ? 'bg-cream border-gold/60 text-ink hover:bg-sand' : 'bg-cream border-sandDark text-inkSoft hover:border-gold/60 hover:text-ink');
+        const label = v === 3 ? 'ausgewogen' : (v < 3 ? 'Richtung: ' + q.low : 'Richtung: ' + q.high);
+        return `<button type="button" onclick="setAnswer('${q.id}', ${v})" class="${base} ${cls}" aria-pressed="${active}" aria-label="${v} – ${label}">${v}</button>`;
+      }).join('');
+      return `
+        <div id="card-${q.id}" class="bg-cream border ${open ? 'border-fire/60 ring-2 ring-fire/15' : (val ? 'border-sandDark' : 'border-sandDark')} rounded-2xl p-5 sm:p-6 transition-colors">
+          <div class="flex items-start gap-3 sm:gap-4">
+            <span class="text-xs font-medium ${val ? 'text-gold' : 'text-inkSoft/60'} mt-1.5 w-6 shrink-0 tabular-nums">${String(i + 1).padStart(2, '0')}</span>
+            <div class="flex-1 space-y-4 min-w-0">
+              <p class="font-editorial text-xl sm:text-2xl font-semibold text-ink leading-snug">${q.text}</p>
+              <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                <span class="hidden sm:block sm:w-1/4 text-right text-xs text-inkSoft leading-snug">${q.low}</span>
+                <div class="flex justify-between sm:justify-center gap-1 sm:gap-3 sm:flex-1" role="group" aria-label="${q.text}">${btns}</div>
+                <span class="hidden sm:block sm:w-1/4 text-xs text-inkSoft leading-snug">${q.high}</span>
+                <div class="flex sm:hidden justify-between gap-4 text-[11px] text-inkSoft leading-snug">
+                  <span class="w-1/2">← ${q.low}</span><span class="w-1/2 text-right">${q.high} →</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+    updateProgress();
+  }
+
+  function setAnswer(id, v) {
+    answers[id] = v;
+    isDemo = false;
+    saveState();
+    const y = window.scrollY;
+    renderQuestions();
+    window.scrollTo(0, y);
+  }
+
+  function openCount() {
+    return QUESTIONS[stepDom()].filter(q => !answers[q.id]).length;
+  }
+
+  function updateProgress() {
+    const total = QUESTIONS[stepDom()].length;
+    const done = total - openCount();
+    const pct = Math.round(done / total * 100);
+    $('progress-label').textContent = `${done} von ${total} Aussagen beantwortet`;
+    $('progress-percent').textContent = `${pct} %`;
+    $('progress-bar').style.width = pct + '%';
+    $('btn-fill-neutral').classList.toggle('invisible', done === total);
+  }
+
+  function fillUnansweredNeutral() {
+    const n = openCount();
+    QUESTIONS[stepDom()].forEach(q => { if (!answers[q.id]) answers[q.id] = 3; });
+    saveState();
+    renderQuestions();
+    if (n) showToast(`${n} offene Aussage${n === 1 ? '' : 'n'} auf neutral gesetzt`);
+  }
+
+  function switchStep(n) {
+    if (n === currentStep) return;
+    currentStep = n;
+    renderQuiz();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function nextStep() {
+    const open = openCount();
+    if (open > 0) {
+      renderQuestions(true);
+      showToast(`Noch ${open} Aussage${open === 1 ? '' : 'n'} offen – oder „neutral setzen“`);
+      const first = QUESTIONS[stepDom()].find(q => !answers[q.id]);
+      if (first) $('card-' + first.id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (currentStep === 1) {
+      switchStep(2);
+    } else {
+      const open1 = QUESTIONS.leben.filter(q => !answers[q.id]).length;
+      if (open1) { switchStep(1); renderQuestions(true); showToast('Im ersten Schritt sind noch Aussagen offen'); return; }
+      showResults();
+    }
+  }
+
+  function prevStep() {
+    if (currentStep === 2) switchStep(1);
+    else navigateTo('intro');
+  }
+
+  function resetCheck() {
+    answers = {};
+    isDemo = false;
+    saveState();
+    impulseFilter = 'priority';
+    startCheck();
+    showToast('Neuer Check gestartet');
+  }
+
+  function loadDemoResult() {
+    answers = {};
+    EL_KEYS.forEach(el => ['leben', 'denken'].forEach(dom => {
+      DEMO[el][dom].forEach((v, i) => { answers[`${dom[0]}-${el}-${i + 1}`] = v; });
+    }));
+    isDemo = true;
+    showResults();
+  }
+
+  /* ================================================================
+     AUSWERTUNG
+     ================================================================ */
+
+  function computeScores() {
+    const res = {};
+    EL_KEYS.forEach(el => {
+      res[el] = {};
+      ['leben', 'denken'].forEach(dom => {
+        const vals = QUESTIONS[dom].filter(q => q.el === el).map(q => answers[q.id] || 3);
+        res[el][dom] = vals.reduce((a, b) => a + b, 0) / vals.length;
+      });
+      res[el].gesamt = (res[el].leben + res[el].denken) / 2;
+    });
+    return res;
+  }
+
+  // Alle Ungleichgewichte (Element × Ebene), stärkste zuerst
+  function imbalances(scores, domFilter) {
+    const list = [];
+    EL_KEYS.forEach(el => ['leben', 'denken'].forEach(dom => {
+      if (domFilter && dom !== domFilter) return;
+      const v = scores[el][dom];
+      const s = stateOf(v);
+      if (s !== 'balance') list.push({ el, dom, v, state: s, dev: Math.abs(v - 3) });
+    }));
+    return list.sort((a, b) => b.dev - a.dev);
+  }
+
+  let lastScores = null;
+
+  function showResults() {
+    const scores = computeScores();
+    lastScores = scores;
+    $('result-kicker').textContent = isDemo ? 'Beispiel-Auswertung · fiktives Profil' : 'Deine persönliche Auswertung';
+    renderHeadline(scores);
+    renderStatusCards(scores);
+    renderRadar(scores);
+    renderBars(scores);
+    renderTension(scores);
+    setImpulseFilter(impulseFilter, true);
+    renderJourneyRecommendation(scores);
+    navigateTo('results');
+  }
+
+  function renderHeadline(scores) {
+    const imb = imbalances(scores);
+    let text;
+    if (!imb.length) {
+      text = 'Alle vier Elemente liegen in Leben und Denken im harmonischen Bereich. Deine Impulse helfen dir, diese Mitte zu pflegen.';
+    } else {
+      const top = imb[0];
+      const balanced = EL_KEYS.filter(el => stateOf(scores[el].leben) === 'balance' && stateOf(scores[el].denken) === 'balance');
+      text = `Am deutlichsten zeigt sich ${ELEMENTS[top.el].name} ${DOM_INLINE[top.dom]} (${lcFirst(stateText(top.v))}, ${fmt(top.v)}).` +
+        (balanced.length ? ` In Balance sind: ${balanced.map(e => ELEMENTS[e].name).join(', ')}.` : ' Kein Element ist derzeit auf beiden Ebenen ganz in der Mitte – ein guter Moment für kleine, sanfte Schritte.');
+    }
+    $('result-headline-summary').textContent = text;
+  }
+
+  function renderStatusCards(scores) {
+    const balanced = EL_KEYS.filter(el => stateOf(scores[el].leben) === 'balance' && stateOf(scores[el].denken) === 'balance');
+    const imb = imbalances(scores);
+    const tensions = EL_KEYS.map(el => ({ el, diff: scores[el].leben - scores[el].denken })).sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+    const t = tensions[0];
+
+    // Karte 1: Im Gleichgewicht
+    let c1;
+    if (balanced.length) {
+      c1 = `<p class="font-editorial text-3xl font-semibold text-ink">${balanced.map(e => `<span style="color:${ELEMENTS[e].color}">${ELEMENTS[e].name}</span>`).join(' · ')}</p>
+            <p class="text-sm text-inkSoft leading-relaxed">${balanced.length === 1 ? ELEMENTS[balanced[0]].desc.leben.balance : 'Diese Kräfte sind im Alltag wie im Denken in ihrer Mitte – deine Ressourcen.'}</p>`;
+    } else {
+      const closest = [...EL_KEYS].sort((a, b) => Math.abs(scores[a].gesamt - 3) - Math.abs(scores[b].gesamt - 3))[0];
+      c1 = `<p class="font-editorial text-3xl font-semibold" style="color:${ELEMENTS[closest].color}">${ELEMENTS[closest].name}</p>
+            <p class="text-sm text-inkSoft leading-relaxed">Kein Element ist auf beiden Ebenen ganz in Balance. Am nächsten an der Mitte ist ${ELEMENTS[closest].name} (Ø ${fmt(scores[closest].gesamt)}) – darauf kannst du bauen.</p>`;
+    }
+
+    // Karte 2: Aus dem Gleichgewicht
+    let c2;
+    if (imb.length) {
+      const top = imb[0];
+      c2 = `<p class="font-editorial text-3xl font-semibold" style="color:${ELEMENTS[top.el].color}">${ELEMENTS[top.el].name} <span class="text-lg text-inkSoft font-medium">${DOM_INLINE[top.dom]}</span></p>
+            <div>${stateBadge(top.v)} <span class="text-xs text-inkSoft ml-1 tabular-nums">${fmt(top.v)}</span></div>
+            <p class="text-sm text-inkSoft leading-relaxed">${ELEMENTS[top.el].desc[top.dom][top.state]}</p>
+            ${imb.length > 1 ? `<p class="text-xs text-inkSoft">Außerdem: ${imb.slice(1, 4).map(i => `${ELEMENTS[i.el].name} ${i.dom === 'leben' ? '(Leben)' : '(Denken)'}`).join(', ')}</p>` : ''}`;
+    } else {
+      c2 = `<p class="font-editorial text-3xl font-semibold text-ink">Nichts Auffälliges</p>
+            <p class="text-sm text-inkSoft leading-relaxed">Alle Werte liegen im harmonischen Bereich zwischen 2,6 und 3,5.</p>`;
+    }
+
+    // Karte 3: Spannungsfeld
+    let c3;
+    if (Math.abs(t.diff) >= 0.75) {
+      c3 = `<p class="font-editorial text-3xl font-semibold" style="color:${ELEMENTS[t.el].color}">${ELEMENTS[t.el].name}</p>
+            <p class="text-sm text-inkSoft tabular-nums">Leben ${fmt(scores[t.el].leben)} · Denken ${fmt(scores[t.el].denken)} <span class="text-gold font-medium">(Δ ${fmt(Math.abs(t.diff))})</span></p>
+            <p class="text-sm text-inkSoft leading-relaxed">${t.diff > 0 ? 'Im Alltag lebst du dieses Element stärker aus, als es sich in deinem Denken zeigt.' : 'Im Denken ist dieses Element stärker präsent als in deinem gelebten Alltag.'}</p>`;
+    } else {
+      c3 = `<p class="font-editorial text-3xl font-semibold text-ink">Stimmig</p>
+            <p class="text-sm text-inkSoft leading-relaxed">Leben und Denken stimmen weitgehend überein – die größte Abweichung liegt bei ${ELEMENTS[t.el].name} (Δ ${fmt(Math.abs(t.diff))}).</p>`;
+    }
+
+    const card = (kicker, icon, body, accent) => `
+      <div class="bg-sand/50 border ${accent} rounded-3xl p-6 space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-cream border border-sandDark flex items-center justify-center text-gold">${icon}</span>
+          <span class="text-xs uppercase tracking-[0.16em] text-gold font-medium">${kicker}</span>
+        </div>
+        ${body}
+      </div>`;
+    $('status-cards-grid').innerHTML =
+      card('Im Gleichgewicht', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12 5 5L20 7"/></svg>', c1, 'border-sandDark') +
+      card('Aus dem Gleichgewicht', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 8v5m0 3h.01"/><circle cx="12" cy="12" r="9"/></svg>', c2, 'border-sandDark') +
+      card('Spannungsfeld', '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16 3 12l4-4M17 8l4 4-4 4M3 12h18"/></svg>', c3, 'border-gold/45');
+  }
+
+  function renderRadar(scores) {
+    // Achsen: Feuer oben, Luft rechts, Wasser unten, Erde links
+    const axes = [
+      { el: 'feuer', ang: -90 }, { el: 'luft', ang: 0 }, { el: 'wasser', ang: 90 }, { el: 'erde', ang: 180 }
+    ];
+    const C = 150, R = 105;
+    const pt = (v, ang) => {
+      const r = (v - 1) / 4 * R;
+      const a = ang * Math.PI / 180;
+      return [C + r * Math.cos(a), C + r * Math.sin(a)];
+    };
+    const poly = v => axes.map(a => pt(typeof v === 'function' ? v(a.el) : v, a.ang).map(n => n.toFixed(1)).join(',')).join(' ');
+    const ring = v => axes.map(a => pt(v, a.ang)).map(p => p.map(n => n.toFixed(1)).join(',')).join(' L ');
+
+    let svg = `<svg viewBox="0 0 300 300" class="w-full h-full" role="img" aria-label="Radar-Diagramm: Element-Werte im Leben und im Denken">`;
+    // Goldene Zone 2,6 – 3,5
+    svg += `<path d="M ${ring(3.5)} Z M ${ring(2.6)} Z" fill="#B5945B" fill-opacity="0.16" fill-rule="evenodd" stroke="none"/>`;
+    // Raster
+    [1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].forEach(v => {
+      svg += `<polygon points="${poly(v)}" fill="none" stroke="${v === 3 ? '#B5945B' : '#E6DEC8'}" stroke-width="${v === 3 ? 1 : 0.8}" ${v === 3 ? 'stroke-dasharray="3 3"' : ''}/>`;
+    });
+    axes.forEach(a => {
+      const [x, y] = pt(5, a.ang);
+      svg += `<line x1="${C}" y1="${C}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#E6DEC8" stroke-width="0.8"/>`;
+    });
+    // Denken (gold)
+    svg += `<polygon points="${poly(el => scores[el].denken)}" fill="#B5945B" fill-opacity="0.25" stroke="#B5945B" stroke-width="2" stroke-linejoin="round"/>`;
+    // Leben (ink)
+    svg += `<polygon points="${poly(el => scores[el].leben)}" fill="#2C2925" fill-opacity="0.07" stroke="#2C2925" stroke-width="2" stroke-linejoin="round"/>`;
+    axes.forEach(a => {
+      const [lx, ly] = pt(scores[a.el].leben, a.ang);
+      const [dx, dy] = pt(scores[a.el].denken, a.ang);
+      svg += `<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="4" fill="#FAF7F2" stroke="#B5945B" stroke-width="2"><title>${ELEMENTS[a.el].name} im Denken: ${fmt(scores[a.el].denken)}</title></circle>`;
+      svg += `<circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="3.5" fill="#2C2925"><title>${ELEMENTS[a.el].name} im Leben: ${fmt(scores[a.el].leben)}</title></circle>`;
+    });
+    // Beschriftungen
+    const labelPos = { feuer: [C, 22, 'middle'], wasser: [C, 288, 'middle'], luft: [292, C - 6, 'end'], erde: [8, C - 6, 'start'] };
+    axes.forEach(a => {
+      const [x, y, anchor] = labelPos[a.el];
+      svg += `<text x="${x}" y="${y}" text-anchor="${anchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="17" font-weight="600" fill="${ELEMENTS[a.el].color}">${ELEMENTS[a.el].name}</text>`;
+      svg += `<text x="${x}" y="${y + 14}" text-anchor="${anchor}" font-family="Inter, sans-serif" font-size="9.5" fill="#5F5950">${fmt(scores[a.el].leben)} · ${fmt(scores[a.el].denken)}</text>`;
+    });
+    svg += `</svg>`;
+    $('radar-container').innerHTML = svg;
+  }
+
+  function renderBars(scores) {
+    const zoneL = (2.6 - 1) / 4 * 100, zoneR = (3.5 - 1) / 4 * 100;
+    const bar = (v, dom) => {
+      const pos = (v - 1) / 4 * 100;
+      const isLeben = dom === 'leben';
+      return `
+        <div class="flex items-center gap-3">
+          <span class="w-16 shrink-0 text-xs text-inkSoft">${isLeben ? 'Leben' : 'Denken'}</span>
+          <div class="relative flex-1 h-2.5 rounded-full bg-sandDark/70">
+            <div class="absolute inset-y-0 rounded-full bg-gold/30" style="left:${zoneL}%;width:${zoneR - zoneL}%"></div>
+            <div class="absolute top-1/2 -translate-y-1/2 w-px h-4 bg-gold" style="left:50%"></div>
+            <div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full ${isLeben ? 'bg-ink' : 'bg-cream border-2 border-gold'} shadow-sm" style="left:${pos}%"></div>
+          </div>
+          <span class="w-9 shrink-0 text-right text-xs font-medium text-ink tabular-nums">${fmt(v)}</span>
+        </div>`;
+    };
+    $('bars-container').innerHTML = EL_KEYS.map(el => {
+      const s = scores[el];
+      const domWorst = Math.abs(s.leben - 3) >= Math.abs(s.denken - 3) ? 'leben' : 'denken';
+      const note = ELEMENTS[el].desc[domWorst][stateOf(s[domWorst])];
+      return `
+        <div class="space-y-2.5 pb-5 border-b border-sandDark/70 last:border-0 last:pb-0">
+          <div class="flex items-center justify-between gap-3">
+            <span class="font-editorial text-xl font-semibold" style="color:${ELEMENTS[el].color}">${ELEMENTS[el].name}
+              <span class="text-xs font-sans font-normal text-inkSoft ml-1">Ø ${fmt(s.gesamt)}</span></span>
+            ${stateBadge(s.gesamt)}
+          </div>
+          ${bar(s.leben, 'leben')}
+          ${bar(s.denken, 'denken')}
+          <p class="text-xs text-inkSoft leading-relaxed">${note}</p>
+        </div>`;
+    }).join('') + `
+      <div class="flex justify-between text-[10px] uppercase tracking-wider text-inkSoft/80 pl-[76px] pr-12">
+        <span>Mangel</span><span>Mitte</span><span>Übermaß</span>
+      </div>`;
+  }
+
+  function renderTension(scores) {
+    const list = EL_KEYS.map(el => ({ el, diff: scores[el].leben - scores[el].denken })).sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+    const t = list[0];
+    const E = ELEMENTS[t.el];
+    let body;
+    if (Math.abs(t.diff) < 0.75) {
+      body = `<p class="text-sm sm:text-base text-inkSoft leading-relaxed max-w-3xl">Dein Alltag und deine innere Welt sprechen eine ähnliche Sprache. Was du denkst, findet sich auch in deinem Handeln wieder – eine gute Basis, um Veränderungen nachhaltig umzusetzen.</p>`;
+    } else {
+      const sl = stateOf(scores[t.el].leben), sd = stateOf(scores[t.el].denken);
+      const interp = t.diff > 0
+        ? `Nach außen ist ${E.name} stärker ausgeprägt als innen. Das kann heißen, dass du im Alltag funktionierst oder Kraft aufbringst, die dein Denken gerade nicht spiegelt. Frage dich: Ist mein Handeln noch von innen getragen – oder läuft es auf Autopilot?`
+        : `Innen ist ${E.name} stärker präsent als im gelebten Alltag. Haltungen, Ideen und Gefühle warten darauf, im Körper und im Handeln anzukommen. Frage dich: Was davon darf diese Woche ganz konkret sichtbar werden?`;
+      body = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+          <div class="bg-sand/60 rounded-2xl p-4 space-y-1">
+            <p class="text-xs uppercase tracking-wider text-inkSoft">Im Leben · ${fmt(scores[t.el].leben)}</p>
+            <p class="text-sm text-ink leading-relaxed">${E.desc.leben[sl]}</p>
+          </div>
+          <div class="bg-sand/60 rounded-2xl p-4 space-y-1">
+            <p class="text-xs uppercase tracking-wider text-inkSoft">Im Denken · ${fmt(scores[t.el].denken)}</p>
+            <p class="text-sm text-ink leading-relaxed">${E.desc.denken[sd]}</p>
+          </div>
+        </div>
+        <p class="text-sm sm:text-base text-inkSoft leading-relaxed max-w-3xl">${interp}</p>`;
+    }
+    const chips = list.map(x => `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sand border border-sandDark text-xs text-inkSoft tabular-nums"><span class="w-2 h-2 rounded-full" style="background:${ELEMENTS[x.el].color}"></span>${ELEMENTS[x.el].name} Δ ${fmt(Math.abs(x.diff))}</span>`).join('');
+    $('tension-box').innerHTML = `
+      <span class="text-xs uppercase tracking-[0.18em] text-gold font-medium">Spannungsfeld Leben ↔ Denken</span>
+      <h2 class="font-editorial text-2xl sm:text-3xl font-semibold text-ink">${Math.abs(t.diff) < 0.75 ? 'Leben und Denken im Einklang' : `${E.name}: zwischen Alltag und innerer Welt`}</h2>
+      ${body}
+      <div class="flex flex-wrap gap-2 pt-1">${chips}</div>`;
+  }
+
+  /* ---------- Impulse ---------- */
+
+  function impulseCard(imp, reason) {
+    const E = ELEMENTS[imp.el];
+    const stateCls = imp.state === 'balance' ? 'text-gold' : 'text-inkSoft';
+    return `
+      <article class="bg-sand/40 border border-sandDark rounded-2xl p-5 sm:p-6 space-y-3 relative overflow-hidden">
+        <span class="absolute left-0 top-0 bottom-0 w-1" style="background:${E.color}"></span>
+        <div class="flex flex-wrap items-center gap-2 text-[11px]">
+          <span class="px-2.5 py-1 rounded-full font-medium" style="background:${E.color}1A;color:${E.color}">${E.name}</span>
+          <span class="px-2.5 py-1 rounded-full bg-cream border border-sandDark text-inkSoft">${DOM_LABEL[imp.dom]}</span>
+          <span class="px-2.5 py-1 rounded-full bg-cream border border-sandDark ${stateCls}">${imp.state === 'balance' ? 'Mitte pflegen' : 'bei ' + STATE_LABEL[imp.state]}</span>
+          <span class="ml-auto text-inkSoft flex items-center gap-1">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>${imp.dur}</span>
+        </div>
+        <h3 class="font-editorial text-2xl font-semibold text-ink leading-tight">${imp.title}</h3>
+        <p class="text-sm text-inkSoft leading-relaxed">${imp.text}</p>
+        ${reason ? `<p class="text-xs text-gold font-medium">${reason}</p>` : ''}
+      </article>`;
+  }
+
+  function setImpulseFilter(filter, silent) {
+    impulseFilter = filter;
+    ['priority', 'leben', 'denken'].forEach(f => {
+      $('filter-' + f).className = 'impulse-tab px-4 py-1.5 rounded-full text-xs font-medium transition-colors ' +
+        (f === filter ? 'bg-ink text-cream' : 'text-inkSoft hover:text-ink');
+    });
+    if (!lastScores) return;
+    const domFilter = filter === 'priority' ? null : filter;
+    const imb = imbalances(lastScores, domFilter);
+    let cards = [];
+    const seen = new Set();
+    imb.forEach(i => {
+      IMPULSES.filter(p => p.el === i.el && p.dom === i.dom && p.state === i.state).forEach(p => {
+        if (seen.has(p)) return;
+        seen.add(p);
+        cards.push(impulseCard(p, `Passend zu: ${ELEMENTS[i.el].name} ${DOM_INLINE[i.dom]} · ${fmt(i.v)}`));
+      });
+    });
+    if (filter === 'priority') cards = cards.slice(0, 6);
+    let html = cards.join('');
+    if (!cards.length) {
+      html = `<div class="md:col-span-2 bg-cream border border-dashed border-gold/50 rounded-2xl p-5 text-sm text-inkSoft">
+        ${domFilter ? `${DOM_LABEL[domFilter]} sind alle Elemente im Gleichgewicht.` : 'Alle Elemente sind im Gleichgewicht.'} Diese Impulse helfen dir, deine Mitte zu pflegen:</div>` +
+        IMPULSES.filter(p => p.state === 'balance').map(p => impulseCard(p)).join('');
+    }
+    $('impulses-container').innerHTML = html;
+  }
+
+  function renderJourneyRecommendation(scores) {
+    const imb = imbalances(scores);
+    let key, why;
+    if (imb.length) {
+      const top = imb[0];
+      if (top.state === 'mangel') {
+        key = top.el;
+        why = `${ELEMENTS[top.el].name} zeigt ${DOM_INLINE[top.dom]} einen Mangel. Diese Reise stärkt seine Qualität: ${ELEMENTS[top.el].quality}.`;
+      } else {
+        key = COMPLEMENT[top.el];
+        why = `${ELEMENTS[top.el].name} ist ${DOM_INLINE[top.dom]} im Übermaß. Das ausgleichende Element ${ELEMENTS[key].name} bringt dich sanft zurück zur Mitte.`;
+      }
+    } else {
+      key = [...EL_KEYS].sort((a, b) => scores[a].gesamt - scores[b].gesamt)[0];
+      why = `Alles ist im Gleichgewicht. ${ELEMENTS[key].name} liegt am niedrigsten – diese Reise nährt es behutsam.`;
+    }
+    const J = JOURNEYS[key];
+    $('journey-recommendation').innerHTML = `
+      <div class="absolute -right-20 -top-20 w-72 h-72 rounded-full border border-gold/25 pointer-events-none"></div>
+      <div class="absolute -right-8 -top-8 w-48 h-48 rounded-full border border-gold/20 pointer-events-none"></div>
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2 max-w-xl">
+          <span class="text-xs uppercase tracking-[0.18em] text-goldLight font-medium">Empfohlene Fantasiereise · ${ELEMENTS[key].name}</span>
+          <h2 class="font-editorial text-3xl sm:text-4xl font-semibold leading-tight">${J.title}</h2>
+          <p class="text-sm text-cream/75 leading-relaxed">${why}</p>
+          <p class="text-xs text-goldLight">${J.band} · ${fmt(J.beat)} Hz Schwebung · ca. ${journeyMinutes(J)} Minuten · mit Kopfhörern</p>
+        </div>
+        <button onclick="openJourneys('${key}')" class="scale-btn shrink-0 px-6 py-3.5 rounded-full bg-gold text-ink hover:bg-goldLight text-sm font-medium transition-colors flex items-center gap-2 self-start md:self-center">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+          Reise beginnen
+        </button>
+      </div>`;
+  }
+
+  function copySummary() {
+    if (!lastScores) return;
+    const s = lastScores;
+    const lines = [];
+    lines.push('Mein Elemente-Kompass – ' + new Date().toLocaleDateString('de-DE'));
+    if (isDemo) lines.push('(Beispiel-Auswertung)');
+    lines.push('');
+    EL_KEYS.forEach(el => {
+      lines.push(`${ELEMENTS[el].name}: Leben ${fmt(s[el].leben)} · Denken ${fmt(s[el].denken)} · Ø ${fmt(s[el].gesamt)} → ${stateText(s[el].gesamt)}`);
+    });
+    const imb = imbalances(s);
+    lines.push('');
+    if (imb.length) {
+      lines.push('Aus dem Gleichgewicht:');
+      imb.forEach(i => lines.push(`– ${ELEMENTS[i.el].name} ${DOM_INLINE[i.dom]}: ${stateText(i.v)} (${fmt(i.v)})`));
+      lines.push('');
+      lines.push('Meine Impulse:');
+      const shown = new Set();
+      imb.slice(0, 3).forEach(i => {
+        const p = IMPULSES.find(p => p.el === i.el && p.dom === i.dom && p.state === i.state);
+        if (p && !shown.has(p)) { shown.add(p); lines.push(`– ${p.title}: ${p.text}`); }
+      });
+    } else {
+      lines.push('Alle Elemente sind im Gleichgewicht (2,6 – 3,5).');
+    }
+    const text = lines.join('\n');
+    const done = () => showToast('Zusammenfassung kopiert');
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  function fallbackCopy(text, done) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { showToast('Kopieren nicht möglich'); }
+    ta.remove();
+  }
+
+  /* ================================================================
+     IMPULSE-LEXIKON
+     ================================================================ */
+
+  const libFilter = { el: 'alle', dom: 'alle', state: 'alle' };
+
+  function chip(label, active, onclick) {
+    return `<button onclick="${onclick}" class="px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${active ? 'bg-ink text-cream' : 'bg-cream border border-sandDark text-inkSoft hover:text-ink hover:border-gold/60'}">${label}</button>`;
+  }
+
+  function setLibFilter(key, val) { libFilter[key] = val; renderLibrary(); }
+
+  function renderLibrary() {
+    $('lib-filter-element').innerHTML = [['alle', 'Alle Elemente'], ...EL_KEYS.map(k => [k, ELEMENTS[k].name])]
+      .map(([k, l]) => chip(l, libFilter.el === k, `setLibFilter('el','${k}')`)).join('');
+    $('lib-filter-domain').innerHTML = [['alle', 'Alle Ebenen'], ['leben', 'Im Leben'], ['denken', 'Im Denken']]
+      .map(([k, l]) => chip(l, libFilter.dom === k, `setLibFilter('dom','${k}')`)).join('');
+    $('lib-filter-state').innerHTML = [['alle', 'Alle Richtungen'], ['mangel', 'Bei Mangel'], ['uebermass', 'Bei Übermaß'], ['balance', 'Mitte pflegen']]
+      .map(([k, l]) => chip(l, libFilter.state === k, `setLibFilter('state','${k}')`)).join('');
+    const list = IMPULSES.filter(p =>
+      (libFilter.el === 'alle' || p.el === libFilter.el) &&
+      (libFilter.dom === 'alle' || p.dom === libFilter.dom || p.dom === 'beide') &&
+      (libFilter.state === 'alle' || p.state === libFilter.state));
+    $('lib-count').textContent = `${list.length} Impuls${list.length === 1 ? '' : 'e'}`;
+    $('library-container').innerHTML = list.length
+      ? list.map(p => impulseCard(p)).join('')
+      : `<p class="md:col-span-2 text-sm text-inkSoft">Für diese Kombination gibt es keinen Impuls.</p>`;
+  }
+
+  /* ================================================================
+     KLANG-ENGINE: binaurale Schwebung + Naturatmosphären (Web Audio)
+     ================================================================ */
+
+  const Sound = {
+    ctx: null,
+    master: null,
+    session: null,
+    buffers: {},
+
+    ensure() {
+      if (!this.ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) throw new Error('Web Audio nicht verfügbar');
+        this.ctx = new AC();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.9;
+        this.master.connect(this.ctx.destination);
+      }
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      return this.ctx;
+    },
+
+    noise(kind) {
+      if (this.buffers[kind]) return this.buffers[kind];
+      const ctx = this.ctx;
+      const len = Math.floor(ctx.sampleRate * 8);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      if (kind === 'white') {
+        for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      } else if (kind === 'pink') {
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < len; i++) {
+          const w = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759;
+          b2 = 0.96900 * b2 + w * 0.1538520; b3 = 0.86650 * b3 + w * 0.3104856;
+          b4 = 0.55000 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.0168980;
+          d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+          b6 = w * 0.115926;
+        }
+      } else if (kind === 'brown') {
+        let last = 0;
+        for (let i = 0; i < len; i++) {
+          const w = Math.random() * 2 - 1;
+          last = (last + 0.02 * w) / 1.02;
+          d[i] = last * 3.5;
+        }
+      } else if (kind === 'crackle') {
+        // Vereinzelte, kurz abklingende Knackser – wie Holz im Feuer
+        let env = 0, amp = 0;
+        for (let i = 0; i < len; i++) {
+          if (env < 0.001 && Math.random() < 0.00035) { env = 1; amp = 0.25 + Math.random() * 0.75; }
+          d[i] = (Math.random() * 2 - 1) * env * amp;
+          env *= 0.985 - Math.random() * 0.01;
+        }
+      }
+      // Weiche Übergänge an der Schleifenstelle
+      const fade = Math.floor(ctx.sampleRate * 0.05);
+      for (let i = 0; i < fade; i++) { d[i] *= i / fade; d[len - 1 - i] *= i / fade; }
+      this.buffers[kind] = buf;
+      return buf;
+    },
+
+    loop(kind, nodes) {
+      const src = this.ctx.createBufferSource();
+      src.buffer = this.noise(kind);
+      src.loop = true;
+      src.start();
+      nodes.push(src);
+      return src;
+    },
+
+    lfo(freq, depth, target, nodes) {
+      const o = this.ctx.createOscillator();
+      o.frequency.value = freq;
+      const g = this.ctx.createGain();
+      g.gain.value = depth;
+      o.connect(g); g.connect(target);
+      o.start();
+      nodes.push(o);
+    },
+
+    buildAmbient(type, out, nodes) {
+      const ctx = this.ctx;
+      if (type === 'erde') {
+        const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 320;
+        const g = ctx.createGain(); g.gain.value = 0.9;
+        this.loop('brown', nodes).connect(lp); lp.connect(g); g.connect(out);
+        this.lfo(0.05, 0.25, g.gain, nodes);
+      } else if (type === 'wasser') {
+        const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900; lp.Q.value = 0.4;
+        const wave = ctx.createGain(); wave.gain.value = 0.55;
+        this.loop('pink', nodes).connect(lp); lp.connect(wave); wave.connect(out);
+        this.lfo(0.11, 0.45, wave.gain, nodes);      // Wellenrhythmus (~9 s)
+        this.lfo(0.11, 500, lp.frequency, nodes);   // Brandung wird heller/dunkler
+      } else if (type === 'feuer') {
+        const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 220;
+        const rumble = ctx.createGain(); rumble.gain.value = 0.55;
+        this.loop('brown', nodes).connect(lp); lp.connect(rumble); rumble.connect(out);
+        const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = 0.7;
+        const crack = ctx.createGain(); crack.gain.value = 0.9;
+        this.loop('crackle', nodes).connect(bp); bp.connect(crack); crack.connect(out);
+        this.lfo(0.17, 0.15, rumble.gain, nodes);
+      } else if (type === 'luft') {
+        const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 650; bp.Q.value = 1.1;
+        const g = ctx.createGain(); g.gain.value = 0.7;
+        this.loop('white', nodes).connect(bp); bp.connect(g); g.connect(out);
+        this.lfo(0.07, 380, bp.frequency, nodes);    // Böen
+        this.lfo(0.13, 0.35, g.gain, nodes);
+      }
+    },
+
+    // cfg: { beat, carrier, ambient, binVol (0–1), ambVol (0–1) }
+    start(cfg) {
+      this.stop(false);
+      const ctx = this.ensure();
+      const now = ctx.currentTime;
+      const s = { nodes: [], cfg: { ...cfg } };
+
+      s.out = ctx.createGain();
+      s.out.gain.setValueAtTime(0, now);
+      s.out.gain.linearRampToValueAtTime(1, now + 4);   // sanftes Einblenden
+      s.out.connect(this.master);
+
+      // Binaurale Schwebung: linkes Ohr = Träger − Δ/2, rechtes Ohr = Träger + Δ/2
+      const merger = ctx.createChannelMerger(2);
+      s.oL = ctx.createOscillator(); s.oR = ctx.createOscillator();
+      s.oL.type = s.oR.type = 'sine';
+      s.oL.frequency.value = cfg.carrier - cfg.beat / 2;
+      s.oR.frequency.value = cfg.carrier + cfg.beat / 2;
+      s.oL.connect(merger, 0, 0);
+      s.oR.connect(merger, 0, 1);
+      s.binGain = ctx.createGain();
+      s.binGain.gain.value = cfg.binVol * 0.22;
+      merger.connect(s.binGain); s.binGain.connect(s.out);
+      s.oL.start(); s.oR.start();
+      s.nodes.push(s.oL, s.oR);
+
+      // Atmosphäre
+      s.ambGain = ctx.createGain();
+      s.ambGain.gain.value = cfg.ambVol * 0.5;
+      s.ambGain.connect(s.out);
+      s.ambNodes = [];
+      if (cfg.ambient && cfg.ambient !== 'none') this.buildAmbient(cfg.ambient, s.ambGain, s.ambNodes);
+
+      this.session = s;
+      return s;
+    },
+
+    setTone(beat, carrier) {
+      const s = this.session; if (!s) return;
+      const t = this.ctx.currentTime;
+      s.oL.frequency.setTargetAtTime(carrier - beat / 2, t, 0.3);
+      s.oR.frequency.setTargetAtTime(carrier + beat / 2, t, 0.3);
+      s.cfg.beat = beat; s.cfg.carrier = carrier;
+    },
+
+    setVolumes(binVol, ambVol) {
+      const s = this.session; if (!s) return;
+      const t = this.ctx.currentTime;
+      if (binVol != null) s.binGain.gain.setTargetAtTime(binVol * 0.22, t, 0.15);
+      if (ambVol != null) s.ambGain.gain.setTargetAtTime(ambVol * 0.5, t, 0.15);
+    },
+
+    setAmbient(type) {
+      const s = this.session; if (!s) return;
+      s.ambNodes.forEach(n => { try { n.stop(); } catch (e) {} });
+      s.ambNodes = [];
+      s.cfg.ambient = type;
+      if (type && type !== 'none') this.buildAmbient(type, s.ambGain, s.ambNodes);
+    },
+
+    pause() { if (this.ctx && this.ctx.state === 'running') this.ctx.suspend(); },
+    resume() { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
+
+    stop(fade = true) {
+      const s = this.session;
+      if (!s) return;
+      this.session = null;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+      const kill = () => {
+        [...s.nodes, ...s.ambNodes].forEach(n => { try { n.stop(); } catch (e) {} });
+        try { s.out.disconnect(); } catch (e) {}
+      };
+      if (fade) {
+        s.out.gain.cancelScheduledValues(t);
+        s.out.gain.setValueAtTime(s.out.gain.value, t);
+        s.out.gain.linearRampToValueAtTime(0, t + 2.5);
+        setTimeout(kill, 2700);
+      } else {
+        kill();
+      }
+    }
+  };
+
+  /* ================================================================
+     SPRACHAUSGABE (Vorlesen über die Stimme des Geräts)
+     ================================================================ */
+
+  const Voice = {
+    supported: 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window,
+    voice: null,
+    token: 0,
+    pick() {
+      if (!this.supported) return null;
+      const voices = speechSynthesis.getVoices().filter(v => /^de(-|_|$)/i.test(v.lang));
+      this.voice = voices.find(v => /female|anna|petra|helena|katja|marlene|vicki|google/i.test(v.name)) || voices[0] || null;
+      return this.voice;
+    },
+    speak(text, onEnd) {
+      if (!this.supported) { onEnd(); return; }
+      const my = ++this.token;
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'de-DE';
+      u.rate = 0.82;
+      u.pitch = 0.95;
+      if (this.voice || this.pick()) u.voice = this.voice;
+      const finish = () => { if (my === this.token) onEnd(); };
+      u.onend = finish;
+      u.onerror = finish;
+      speechSynthesis.speak(u);
+    },
+    cancel() {
+      this.token++;
+      if (this.supported) speechSynthesis.cancel();
+    }
+  };
+  if (Voice.supported) {
+    Voice.pick();
+    speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', () => Voice.pick());
+  }
+
+  /* ================================================================
+     FANTASIEREISEN – Player
+     ================================================================ */
+
+  const JP = {
+    key: null, idx: 0, segElapsed: 0, playing: false, finished: false,
+    speaking: false, usedVoice: false, needRespeak: false,
+    voiceOn: Voice.supported, binVol: 0.4, ambVol: 0.55, timer: null
+  };
+
+  function readSeconds(text) {
+    const words = text.split(/\s+/).length;
+    return Math.max(5, words / 1.9);
+  }
+  function segTarget(seg) {
+    return (JP.usedVoice ? 0 : readSeconds(seg[0])) + seg[1];
+  }
+  function journeyMinutes(J) {
+    const sec = J.segments.reduce((a, s) => a + readSeconds(s[0]) + s[1], 0);
+    return Math.round(sec / 60);
+  }
+
+  function openJourneys(key) {
+    navigateTo('journeys');
+    if (key) setTimeout(() => selectJourney(key, true), 50);
+  }
+
+  function renderJourneyCards() {
+    $('journey-cards').innerHTML = EL_KEYS.map(k => {
+      const J = JOURNEYS[k], E = ELEMENTS[k];
+      const active = JP.key === k;
+      return `
+        <article class="bg-sand/50 border ${active ? 'border-gold' : 'border-sandDark'} rounded-3xl p-6 space-y-3 flex flex-col">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase tracking-[0.16em] font-medium" style="color:${E.color}">${E.name} · ${J.subtitle}</span>
+            <span class="text-[11px] text-inkSoft">ca. ${journeyMinutes(J)} Min.</span>
+          </div>
+          <h3 class="font-editorial text-3xl font-semibold text-ink leading-tight">${J.title}</h3>
+          <p class="text-sm text-inkSoft leading-relaxed flex-1">${J.intro}</p>
+          <div class="flex flex-wrap items-center gap-2 text-[11px] text-inkSoft">
+            <span class="px-2.5 py-1 rounded-full bg-cream border border-sandDark">${J.band} · ${fmt(J.beat)} Hz</span>
+            <span class="px-2.5 py-1 rounded-full bg-cream border border-sandDark">Grundton ${fmt(J.carrier)} Hz</span>
+            <span class="px-2.5 py-1 rounded-full bg-cream border border-sandDark">${AMBIENTS.find(a => a.key === J.ambient).label.split(' · ')[1]}</span>
+          </div>
+          <button onclick="selectJourney('${k}', true)" class="scale-btn mt-1 self-start px-5 py-2.5 rounded-full ${active ? 'bg-gold text-ink' : 'bg-ink text-cream hover:bg-ink/90'} text-sm font-medium transition-colors flex items-center gap-2">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+            ${active ? 'Ausgewählt' : 'Reise wählen'}
+          </button>
+        </article>`;
+    }).join('');
+  }
+
+  function selectJourney(key, scroll) {
+    stopSoundroom(true);
+    stopJourney(true);
+    JP.key = key; JP.idx = 0; JP.segElapsed = 0; JP.finished = false;
+    renderPlayer();
+    renderJourneyCards();
+    if (scroll) $('journey-player').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderPlayer() {
+    const J = JOURNEYS[JP.key], E = ELEMENTS[JP.key];
+    const p = $('journey-player');
+    p.classList.remove('hidden');
+    p.innerHTML = `
+      <div class="absolute -right-24 -top-24 w-80 h-80 rounded-full border border-gold/20 pointer-events-none"></div>
+      <div class="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div>
+          <span class="text-xs uppercase tracking-[0.18em] text-goldLight font-medium">Fantasiereise · ${E.name}</span>
+          <h2 class="font-editorial text-3xl sm:text-4xl font-semibold mt-0.5">${J.title}</h2>
+          <p class="text-xs text-cream/60 mt-1">${J.band} · ${fmt(J.beat)} Hz Schwebung · links ${fmt(J.carrier - J.beat / 2)} Hz / rechts ${fmt(J.carrier + J.beat / 2)} Hz</p>
+        </div>
+        <button onclick="closePlayer()" class="self-start text-xs text-cream/60 hover:text-cream underline underline-offset-4">Schließen</button>
+      </div>
+
+      <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+        <div class="md:col-span-4 flex justify-center">
+          <div class="relative w-40 h-40 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border border-gold/30"></div>
+            <div id="jp-breath" class="breath ${JP.playing ? 'is-running' : ''} w-32 h-32 rounded-full border border-gold/60 flex items-center justify-center" style="background:${E.color}55">
+              <div class="w-14 h-14 rounded-full bg-gold/40"></div>
+            </div>
+          </div>
+        </div>
+        <div class="md:col-span-8 min-h-[150px] flex flex-col justify-center">
+          <p id="jp-text" aria-live="polite" class="segment-text font-editorial text-2xl sm:text-3xl leading-snug text-cream">
+            Mach es dir bequem, setze deine Kopfhörer auf und drücke auf „Starten“, wenn du bereit bist.
+          </p>
+        </div>
+      </div>
+
+      <div class="relative z-10 space-y-2">
+        <div class="flex justify-between text-xs text-cream/60">
+          <span id="jp-seg-label">Abschnitt 0 von ${J.segments.length}</span>
+          <span>ca. ${journeyMinutes(J)} Min.</span>
+        </div>
+        <div class="w-full h-1.5 bg-cream/15 rounded-full overflow-hidden">
+          <div id="jp-progress" class="h-full bg-gold rounded-full transition-all duration-300" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center gap-5 justify-between">
+        <div class="flex items-center gap-3">
+          <button id="jp-play" onclick="toggleJourney()" class="scale-btn px-6 py-3.5 rounded-full bg-gold text-ink hover:bg-goldLight text-sm font-medium transition-colors flex items-center gap-2 min-w-[150px] justify-center"></button>
+          <button onclick="stopJourney()" class="px-5 py-3.5 rounded-full border border-cream/25 text-cream/80 hover:text-cream hover:border-cream/50 text-sm font-medium transition-colors">Beenden</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:w-[520px]">
+          <label class="flex items-center gap-2 text-xs text-cream/80 ${Voice.supported ? 'cursor-pointer' : 'opacity-50'}">
+            <input type="checkbox" id="jp-voice" class="w-4 h-4 accent-[#B5945B]" ${JP.voiceOn ? 'checked' : ''} ${Voice.supported ? '' : 'disabled'} onchange="setJourneyVoice(this.checked)" />
+            ${Voice.supported ? 'Text vorlesen' : 'Vorlesen nicht verfügbar'}
+          </label>
+          <label class="block space-y-1 text-xs text-cream/80">
+            <span>Klang</span>
+            <input type="range" min="0" max="100" value="${Math.round(JP.binVol * 100)}" oninput="JP.binVol=this.value/100; if (JP.key) Sound.setVolumes(JP.binVol, null)" />
+          </label>
+          <label class="block space-y-1 text-xs text-cream/80">
+            <span>Atmosphäre</span>
+            <input type="range" min="0" max="100" value="${Math.round(JP.ambVol * 100)}" oninput="JP.ambVol=this.value/100; if (JP.key) Sound.setVolumes(null, JP.ambVol)" />
+          </label>
+        </div>
+      </div>`;
+    updatePlayerUI();
+  }
+
+  function updatePlayerUI() {
+    if (!JP.key) return;
+    const J = JOURNEYS[JP.key];
+    const btn = $('jp-play');
+    if (btn) {
+      btn.innerHTML = JP.playing
+        ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>Pause'
+        : `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>${JP.finished ? 'Noch einmal' : (JP.idx > 0 || JP.segElapsed > 0 ? 'Fortsetzen' : 'Starten')}`;
+    }
+    const br = $('jp-breath');
+    if (br) br.classList.toggle('is-running', JP.playing);
+    const n = J.segments.length;
+    const started = JP.playing || JP.idx > 0 || JP.segElapsed > 0 || JP.finished;
+    let frac = 0;
+    if (JP.finished) frac = 1;
+    else if (started) frac = (JP.idx + Math.min(1, JP.segElapsed / Math.max(1, segTarget(J.segments[JP.idx])))) / n;
+    $('jp-progress').style.width = (frac * 100).toFixed(1) + '%';
+    $('jp-seg-label').textContent = JP.finished ? 'Reise abgeschlossen' : `Abschnitt ${started ? JP.idx + 1 : 0} von ${n}`;
+  }
+
+  function showSegmentText(text) {
+    const el = $('jp-text');
+    if (!el) return;
+    el.style.opacity = 0;
+    setTimeout(() => { el.textContent = text; el.style.opacity = 1; }, 350);
+  }
+
+  function beginSegment(i) {
+    const J = JOURNEYS[JP.key];
+    JP.idx = i;
+    JP.segElapsed = 0;
+    const text = J.segments[i][0];
+    showSegmentText(text);
+    JP.usedVoice = JP.voiceOn && Voice.supported;
+    JP.needRespeak = false;
+    if (JP.usedVoice) speakCurrent();
+    updatePlayerUI();
+  }
+
+  function speakCurrent() {
+    const text = JOURNEYS[JP.key].segments[JP.idx][0];
+    JP.speaking = true;
+    // kurze Pause, damit der Text erst sanft erscheint
+    setTimeout(() => {
+      if (!JP.playing || !JP.speaking) return;
+      Voice.speak(text, () => { JP.speaking = false; });
+    }, 600);
+  }
+
+  function journeyTick() {
+    if (!JP.playing || !JP.key) return;
+    if (JP.speaking) { updatePlayerUI(); return; }
+    const J = JOURNEYS[JP.key];
+    JP.segElapsed += 0.25;
+    if (JP.segElapsed >= segTarget(J.segments[JP.idx])) {
+      if (JP.idx + 1 < J.segments.length) beginSegment(JP.idx + 1);
+      else finishJourney();
+    }
+    updatePlayerUI();
+  }
+
+  function toggleJourney() {
+    if (!JP.key) return;
+    if (JP.playing) { pauseJourney(); return; }
+    if (JP.finished) { JP.finished = false; JP.idx = 0; JP.segElapsed = 0; }
+    playJourney();
+  }
+
+  function playJourney() {
+    const J = JOURNEYS[JP.key];
+    stopSoundroom(true);
+    try {
+      if (!Sound.session || Sound.session.owner !== 'journey') {
+        const s = Sound.start({ beat: J.beat, carrier: J.carrier, ambient: J.ambient, binVol: JP.binVol, ambVol: JP.ambVol });
+        s.owner = 'journey';
+      } else {
+        Sound.resume();
+      }
+    } catch (e) {
+      showToast('Dein Browser unterstützt keine Klangwiedergabe');
+    }
+    JP.playing = true;
+    if (JP.idx === 0 && JP.segElapsed === 0 && !JP.speaking) {
+      beginSegment(0);
+    } else if (JP.needRespeak) {
+      JP.needRespeak = false;
+      speakCurrent();
+    }
+    clearInterval(JP.timer);
+    JP.timer = setInterval(journeyTick, 250);
+    updatePlayerUI();
+  }
+
+  function pauseJourney() {
+    JP.playing = false;
+    if (JP.speaking) { Voice.cancel(); JP.speaking = false; JP.needRespeak = true; }
+    Sound.pause();
+    clearInterval(JP.timer);
+    updatePlayerUI();
+  }
+
+  function setJourneyVoice(on) {
+    JP.voiceOn = on;
+    if (!on && JP.speaking) {
+      Voice.cancel();
+      JP.speaking = false;
+      JP.usedVoice = false;
+      JP.segElapsed = 0;
+    }
+    if (!on) JP.needRespeak = false;
+  }
+
+  function finishJourney() {
+    JP.playing = false;
+    JP.finished = true;
+    clearInterval(JP.timer);
+    Voice.cancel();
+    JP.speaking = false;
+    if (Sound.session && Sound.session.owner === 'journey') Sound.stop(true);
+    showSegmentText('Nachklang: Bleib noch einen Moment ruhig sitzen oder liegen und spüre nach, was sich verändert hat. Vielleicht magst du einen Satz dazu notieren.');
+    updatePlayerUI();
+  }
+
+  function stopJourney(silent) {
+    const wasActive = JP.playing || JP.idx > 0 || JP.segElapsed > 0;
+    JP.playing = false;
+    clearInterval(JP.timer);
+    Voice.cancel();
+    JP.speaking = false;
+    JP.needRespeak = false;
+    if (Sound.session && Sound.session.owner === 'journey') Sound.stop(true);
+    JP.idx = 0; JP.segElapsed = 0; JP.finished = false;
+    if (JP.key && $('jp-text')) {
+      showSegmentText('Die Reise wurde beendet. Du kannst jederzeit neu beginnen.');
+      updatePlayerUI();
+    }
+    if (!silent && wasActive) showToast('Fantasiereise beendet');
+  }
+
+  function closePlayer() {
+    stopJourney(true);
+    JP.key = null;
+    $('journey-player').classList.add('hidden');
+    renderJourneyCards();
+  }
+
+  /* ================================================================
+     FREIER KLANGRAUM
+     ================================================================ */
+
+  const ROOM = { beat: 6, carrier: 200, ambient: 'none', binVol: 0.4, ambVol: 0.5, minutes: 20, running: false, remaining: 0, timer: null, band: 'theta' };
+
+  function bandFor(beat) {
+    if (beat < 4) return ['Delta', 'Tiefe Ruhe'];
+    if (beat < 8) return ['Theta', 'Meditation'];
+    if (beat < 13) return ['Alpha', 'Entspannte Wachheit'];
+    return ['Beta', 'Fokus'];
+  }
+
+  function renderSoundroom() {
+    $('band-presets').innerHTML = BANDS.map(b => {
+      const active = ROOM.band === b.key;
+      return `<button onclick="setBand('${b.key}')" class="text-left px-3.5 py-3 rounded-2xl border transition-colors ${active ? 'bg-ink border-ink text-cream' : 'bg-cream border-sandDark text-ink hover:border-gold/60'}">
+        <span class="block text-sm font-medium">${b.name} · ${fmt(b.beat)} Hz</span>
+        <span class="block text-[11px] ${active ? 'text-cream/70' : 'text-inkSoft'}">${b.label}</span></button>`;
+    }).join('');
+    $('ambient-presets').innerHTML = AMBIENTS.map(a => chip(a.label, ROOM.ambient === a.key, `setRoomAmbient('${a.key}')`)).join('');
+    $('timer-presets').innerHTML = TIMERS.map(t => chip(t.label, ROOM.minutes === t.min, `setRoomTimer(${t.min})`)).join('');
+    $('beat-slider').value = ROOM.beat;
+    $('carrier-slider').value = Math.round(ROOM.carrier);
+    updateRoomLabels();
+  }
+
+  function updateRoomLabels() {
+    const [name, label] = bandFor(ROOM.beat);
+    $('beat-value').textContent = fmt(ROOM.beat) + ' Hz';
+    $('carrier-value').textContent = Math.round(ROOM.carrier) + ' Hz';
+    $('room-band-label').textContent = `${name} · ${label}`;
+    $('room-freq-label').textContent = `links ${fmt(ROOM.carrier - ROOM.beat / 2)} Hz · rechts ${fmt(ROOM.carrier + ROOM.beat / 2)} Hz`;
+    $('room-bin-vol-value').textContent = Math.round(ROOM.binVol * 100) + ' %';
+    $('room-amb-vol-value').textContent = Math.round(ROOM.ambVol * 100) + ' %';
+    $('room-toggle-label').textContent = ROOM.running ? 'Klang beenden' : 'Klang starten';
+    $('room-toggle').classList.toggle('bg-gold', ROOM.running);
+    $('room-toggle').classList.toggle('text-ink', ROOM.running);
+    $('room-toggle').classList.toggle('bg-ink', !ROOM.running);
+    $('room-toggle').classList.toggle('text-cream', !ROOM.running);
+    $('room-breath').classList.toggle('is-running', ROOM.running);
+    updateRoomCountdown();
+  }
+
+  function updateRoomCountdown() {
+    const el = $('room-countdown');
+    if (!ROOM.running) { el.textContent = ROOM.minutes ? `Bereit · ${ROOM.minutes} Minuten` : 'Bereit · ohne Zeitbegrenzung'; return; }
+    if (!ROOM.minutes) { el.textContent = 'Läuft · ohne Zeitbegrenzung'; return; }
+    const m = Math.floor(ROOM.remaining / 60), s = ROOM.remaining % 60;
+    el.textContent = `Noch ${m}:${String(s).padStart(2, '0')} Min.`;
+  }
+
+  function setBand(key) {
+    const b = BANDS.find(x => x.key === key);
+    ROOM.band = key; ROOM.beat = b.beat; ROOM.carrier = b.carrier;
+    if (ROOM.running) Sound.setTone(ROOM.beat, ROOM.carrier);
+    renderSoundroom();
+  }
+
+  function setRoomAmbient(key) {
+    ROOM.ambient = key;
+    if (ROOM.running) Sound.setAmbient(key);
+    renderSoundroom();
+  }
+
+  function setRoomTimer(min) {
+    ROOM.minutes = min;
+    if (ROOM.running) ROOM.remaining = min * 60;
+    renderSoundroom();
+  }
+
+  function toggleSoundroom() {
+    if (ROOM.running) { stopSoundroom(); return; }
+    // Eine laufende Reise anhalten
+    if (JP.playing || JP.idx > 0) stopJourney(true);
+    try {
+      const s = Sound.start({ beat: ROOM.beat, carrier: ROOM.carrier, ambient: ROOM.ambient, binVol: ROOM.binVol, ambVol: ROOM.ambVol });
+      s.owner = 'room';
+    } catch (e) {
+      showToast('Dein Browser unterstützt keine Klangwiedergabe');
+      return;
+    }
+    ROOM.running = true;
+    ROOM.remaining = ROOM.minutes * 60;
+    clearInterval(ROOM.timer);
+    ROOM.timer = setInterval(() => {
+      if (!ROOM.minutes) return;
+      ROOM.remaining = Math.max(0, ROOM.remaining - 1);
+      updateRoomCountdown();
+      if (ROOM.remaining === 0) { stopSoundroom(); showToast('Klangzeit beendet'); }
+    }, 1000);
+    updateRoomLabels();
+    showToast('Klang wird sanft eingeblendet');
+  }
+
+  function stopSoundroom(silent) {
+    if (!ROOM.running) return;
+    ROOM.running = false;
+    clearInterval(ROOM.timer);
+    if (Sound.session && Sound.session.owner === 'room') Sound.stop(true);
+    updateRoomLabels();
+  }
+
+  // Regler im Klangraum
+  $('beat-slider').addEventListener('input', e => {
+    ROOM.beat = parseFloat(e.target.value);
+    ROOM.band = (BANDS.find(b => b.beat === ROOM.beat && Math.round(b.carrier) === Math.round(ROOM.carrier)) || {}).key || null;
+    if (ROOM.running) Sound.setTone(ROOM.beat, ROOM.carrier);
+    updateRoomLabels();
+    $('band-presets').querySelectorAll('button').forEach((btn, i) => {
+      const active = BANDS[i].key === ROOM.band;
+      btn.className = `text-left px-3.5 py-3 rounded-2xl border transition-colors ${active ? 'bg-ink border-ink text-cream' : 'bg-cream border-sandDark text-ink hover:border-gold/60'}`;
+      btn.lastElementChild.className = `block text-[11px] ${active ? 'text-cream/70' : 'text-inkSoft'}`;
+    });
+  });
+  $('carrier-slider').addEventListener('input', e => {
+    ROOM.carrier = parseFloat(e.target.value);
+    if (ROOM.running) Sound.setTone(ROOM.beat, ROOM.carrier);
+    updateRoomLabels();
+  });
+  $('room-bin-vol').addEventListener('input', e => {
+    ROOM.binVol = e.target.value / 100;
+    if (ROOM.running) Sound.setVolumes(ROOM.binVol, null);
+    updateRoomLabels();
+  });
+  $('room-amb-vol').addEventListener('input', e => {
+    ROOM.ambVol = e.target.value / 100;
+    if (ROOM.running) Sound.setVolumes(null, ROOM.ambVol);
+    updateRoomLabels();
+  });
+
+  /* ================================================================
+     START
+     ================================================================ */
+
+  loadState();
+  renderSoundroom();
+  renderJourneyCards();
+  </script>
+</body>
+</html>
